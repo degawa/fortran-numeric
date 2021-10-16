@@ -31,14 +31,14 @@ module numeric_real
     real(real32), public, parameter :: Real32_Negative_Max = real(Z'FF7FFFFF', real32)
         !! The negative maximum value of 4-byte floating-point number `≈-3.40282347E+38`
 
-    real(real64), public, parameter :: Real64_Positive_Max = real(Z'7FEFFFFFFFFFFFFF', real64)
-        !! The positive minimum value of 8-byte floating-point number `≈+2.2250738585072014E-308`
     real(real64), public, parameter :: Real64_Positive_Min = real(Z'0010000000000000', real64)
         !! The positive maximum value of 8-byte floating-point number `≈+1.7976931348623157E+308`
-    real(real64), public, parameter :: Real64_Negative_Max = real(Z'FFEFFFFFFFFFFFFF', real64)
-        !! The negative minimum value of 8-byte floating-point number `≈-2.2250738585072014E-308`
+    real(real64), public, parameter :: Real64_Positive_Max = real(Z'7FEFFFFFFFFFFFFF', real64)
+        !! The positive minimum value of 8-byte floating-point number `≈+2.2250738585072014E-308`
     real(real64), public, parameter :: Real64_Negative_Min = real(Z'8010000000000000', real64)
         !! The negative maximum value of 8-byte floating-point number `≈-1.7976931348623157E+308`
+    real(real64), public, parameter :: Real64_Negative_Max = real(Z'FFEFFFFFFFFFFFFF', real64)
+        !! The negative minimum value of 8-byte floating-point number `≈-2.2250738585072014E-308`
 
     real(real32), public, parameter :: Real32_Machine_Epsilon = epsilon(result_type_real32)
         !! The machine epsilon of 4-byte floating-point number `≈1.19209290E-07`
