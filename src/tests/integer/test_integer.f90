@@ -101,9 +101,12 @@ contains
             call check(to_string(-huge(0) - 1) == "-2147483648", "to_string() integer value test")
             call check(to_string(100, 5) == "  100", "to_string() integer digit specification test")
             call check(to_string(100, 2) == "**", "to_string() integer invalid digit specification test")
-            call check(to_string(100, digit=5, zerofill=6) == "00100", "to_string() integer digit specification zero filling out of range test")
-            call check(to_string(-100, digit=5, zerofill=4) == " -0100", "to_string() integer value digit specification zero filling test")
-            call check(to_string(-100, digit=5, zerofill=5) == "-00100", "to_string() integer value digit specification zero filling test")
+            call check(to_string(100, digit=5, zerofill=6) == "00100", &
+                       "to_string() integer digit specification zero filling out of range test")
+            call check(to_string(-100, digit=5, zerofill=4) == " -0100", &
+                       "to_string() integer value digit specification zero filling test")
+            call check(to_string(-100, digit=5, zerofill=5) == "-00100", &
+                       "to_string() integer value digit specification zero filling test")
         end block
 
         print *, "numeric integer test end"
