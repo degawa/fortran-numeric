@@ -5,7 +5,7 @@ a library handling integer, floating-point number, and non-number for modern For
 ## Motivation
 This library is developed to supplement the functionality of Fortran-stdlib developed by the Fortran-lang community.
 
-Fortran does not have constants of maximum and minimum values. Those can quickly be gotten by intrinsic functions like `huge()` or `tiny()`, but I feel strange to have to write a literal that represents the return type in the functions like `huge(0)`.
+Fortran does not have constants of maximum and minimum values. Those can quickly be gotten by intrinsic functions like `huge()` or `tiny()`, but I feel strange to have to write a literal that represents the result kind in the functions like `huge(0)`.
 
 I sometimes check whether there is nan or inf in arrays in numerical simulation codes to verify whether a simulation has diverged.
 
