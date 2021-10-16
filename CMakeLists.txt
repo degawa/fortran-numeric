@@ -18,7 +18,7 @@ if(CMAKE_Fortran_COMPILER_ID MATCHES Intel OR Fortran_COMPILER_NAME MATCHES "ifo
         set(STD_FLAG_KEYWORD "f18")
     endif()
 
-    if(CMAKE_SYSTEM_NAME STREQUAL "Windows")
+    if(CMAKE_HOST_SYSTEM_NAME STREQUAL "Windows")
         set(CMAKE_Fortran_FLAGS         "/stand:${STD_FLAG_KEYWORD} /fpp /nologo")
         set(CMAKE_Fortran_FLAGS_DEBUG   "/warn:all /Qdiag-disable:5462 /Qdiag-disable:5194 /traceback /check:all /check:noarg_temp_created /debug:full /Od")
         set(CMAKE_Fortran_FLAGS_RELEASE "/O3 /QxHost")
