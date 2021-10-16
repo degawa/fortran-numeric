@@ -70,11 +70,13 @@ The Numeric Library provides the following constants:
     - `Int32_Max`, `Int32_Min`
     - `Int64_Max`, `Int64_Min`
     - `result_type_int8`, `result_type_int16`, `result_type_int32`, `result_type_int64`
+        - These constants are used such as `huge(result_type_int32)`.
 - numeric_real
     - `Real32_Positive_Min`, `Real32_Positive_Max`, `Real32_Negative_Min`, `Real32_Negative_Max`
     - `Real64_Positive_Min`, `Real64_Positive_Max`, `Real64_Negative_Min`, `Real64_Negative_Max`
     - `Real32_Machine_Epsilon`, `Real64_Machine_Epsilon`
     - `result_type_real32`, `result_type_real64`
+        - These constants are used such as `huge(result_type_real64)`.
 - numeric_nonnumber
     - `Real32_Quiet_NaN`, `Real32_Positive_Inf`, `Real32_Negative_Inf`
     - `Real64_Quiet_NaN`, `Real64_Positive_Inf`, `Real64_Negative_Inf`
