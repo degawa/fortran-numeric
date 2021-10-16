@@ -52,3 +52,35 @@ cmake --build build --target test
 
 A test for numeric_integer may fail if build option `-DCMAKE_BUILD_TYPE=Release` is not used.
 This is because *output conversion error* related to Internal Formatted Write may occur and be chacked  when trying to print an integer with a smaller number of digits, like `to_string(100, digit=2)`.
+
+## Quick Reference
+The Numeric Library provides the following constants:
+
+- numeric_integer
+    - `Int8_Max`, `Int8_Min`
+    - `Int16_Max`, `Int16_Min`
+    - `Int32_Max`, `Int32_Min`
+    - `Int64_Max`, `Int64_Min`
+    - `result_type_int8`, `result_type_int16`, `result_type_int32`, `result_type_int64`
+- numeric_real
+    - `Real32_Positive_Min`, `Real32_Positive_Max`, `Real32_Negative_Min`, `Real32_Negative_Max`
+    - `Real64_Positive_Min`, `Real64_Positive_Max`, `Real64_Negative_Min`, `Real64_Negative_Max`
+    - `Real32_Machine_Epsilon`, `Real64_Machine_Epsilon`
+    - `result_type_real32`, `result_type_real64`
+- numeric_nonnumber
+    - `Real32_Quiet_NaN`, `Real32_Positive_Inf`, `Real32_Negative_Inf`
+    - `Real64_Quiet_NaN`, `Real64_Positive_Inf`, `Real64_Negative_Inf`
+
+The Numeric Library provides the following functions:
+- numeric_integer
+    - `get_digit` for int8 to int 64
+    - `is_positive` and `is_negative` for int8 to int 64
+    - `to_string` for int32
+        - to_string with format like `to_string(val, format='(i5.4)')`
+        - to_string with digits like `to_string(val, digit=5, zerofill=4)`
+- numeric_real
+    - `to_string` for real32 and real64
+        - to_string with format like `to_string(val, format='(e18.10E3)')`
+- numeric_nonNumber
+    - `is_positive_inf`, `is_negative_inf, is_inf`
+    - `has_nan` and `has_inf` for rank [1-3] {real32|real64} array
