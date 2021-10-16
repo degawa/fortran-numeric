@@ -1,6 +1,7 @@
 !| The `numeric_real` module provides constants and procedures related to floating-point number.
 !
-! The constants include minimum and maximum values of the 4- and 8-byte floating-point number types provided by the Fortran standard,
+! The constants include minimum and maximum values of the 4- and 8-byte floating-point number types
+! provided by the Fortran standard,
 ! parameters for specifying the result kind of the intrinsic procedures like `transfera, and the machine epsilons.
 ! 16-byte floating-point number type is not supported yet.
 !
