@@ -46,14 +46,14 @@ To install library, copy mod files to your include directory and library to your
 An additional option `-DCMAKE_BUILD_TYPE={Debug|Release}` can used to provide the compiler options for debugging or optimizaion.
 
 ### Test
-To test the library, executing the following command to run the test suit:
+To test the library, execute the following command to run the test suit:
 
 ```console
 cmake --build build --target test
 ```
 
 A test for numeric_integer may fail if build option `-DCMAKE_BUILD_TYPE=Release` is not used.
-This is because *output conversion error* related to Internal Formatted Write may occur and be chacked  when trying to print an integer with a smaller number of digits, like `to_string(100, digit=2)`.
+This is because *output conversion error* related to Internal Formatted Write may occur and be chacked when trying to print an integer with a smaller number of digits, for example `to_string(100, digit=2)`.
 
 ## Quick Reference
 The Numeric Library provides the following constants:
