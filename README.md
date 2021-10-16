@@ -84,7 +84,7 @@ The Numeric Library provides the following functions:
     - `to_string` for real32 and real64
         - to_string with format like `to_string(val, format='(e18.10E3)')`
 - numeric_nonNumber
-    - `is_positive_inf`, `is_negative_inf, is_inf`
+    - `is_positive_inf`, `is_negative_inf`, `is_inf`
     - `has_nan` and `has_inf` for rank [1-3] {real32|real64} array
 
 ## API Document
