@@ -14,3 +14,6 @@ set_target_properties(${LIBNAME}
     LIBRARY_OUTPUT_DIRECTORY ${LIB_OUTPUT_DIR}
     Fortran_MODULE_DIRECTORY ${MOD_OUTPUT_DIR}
 )
+
+
+add_subdirectory(tests)

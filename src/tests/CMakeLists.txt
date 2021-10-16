@@ -29,3 +29,5 @@ function(ADDTEST name)
 endfunction(ADDTEST)
 
 add_subdirectory(integer)
+add_subdirectory(real)
+add_subdirectory(nonNumber)
