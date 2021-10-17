@@ -1,0 +1,10 @@
+name = "check-tool"
+version = "0.1.0"
+license = "MIT"
+author = "Tomohiro Degawa"
+maintainer = "degawa.tomohiro@gmail.com"
+copyright = "2021 Tomohiro Degawa"
+description = "A simple check tool"
+
+[library]
+source-dir="src"
