@@ -52,7 +52,7 @@ To install library, copy mod files to your include directory and library to your
 An additional option `-DCMAKE_BUILD_TYPE={Debug|Release}` can used to provide the compiler options for debugging or optimizaion.
 
 ### Test
-To test the library, execute the following command to run the test suit:
+To test the library, execute the following command to run the test suite:
 
 ```console
 cmake --build build --target test
