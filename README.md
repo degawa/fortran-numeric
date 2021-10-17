@@ -28,12 +28,21 @@ The Numeric Library is focused on the following scope:
     - THe library is tested using make for windows 3.81 as the backend
 - FORD
     - FORD is used for generating the API document.
+- fpm (optional)
+    - The library supports fpm (fortran-lang/fpm) for build. fpm 0.4.0, alpha is used.
 
 ### Get the code
 To get the code, execute the following commnad:
 
 ```console
 git clone https://github.com/degawa/fortran-numeric.git
+cd fortran-numeric
+```
+
+To get the code that can be built using fpm, run
+
+```console
+git clone https://github.com/degawa/fortran-numeric.git -b fortran-numeric-fpm
 cd fortran-numeric
 ```
 
@@ -51,6 +60,13 @@ To install library, copy mod files to your include directory and library to your
 
 An additional option `-DCMAKE_BUILD_TYPE={Debug|Release}` can used to provide the compiler options for debugging or optimizaion.
 
+### Build with fpm
+To build the library using fpm, execute the following command:
+
+```console
+fpm build
+```
+
 ### Test
 To test the library, execute the following command to run the test suite:
 
@@ -60,6 +76,12 @@ cmake --build build --target test
 
 A test for numeric_integer may fail if build option `-DCMAKE_BUILD_TYPE=Release` is not used.
 This is because *output conversion error* related to Internal Formatted Write may occur and be chacked when trying to print an integer with a smaller number of digits, for example `to_string(100, digit=2)`.
+
+If fpm is used for build, the test suite can be run within the framework of fpm:
+
+```console
+fpm test
+```
 
 ## Quick Reference
 The Numeric Library provides the following constants:
@@ -105,3 +127,4 @@ ford api-doc-ford-settings.md
 ## link
 - [stdlib](https://github.com/fortran-lang/stdlib)
 - [FORD](https://github.com/Fortran-FOSS-Programmers/ford)
+- [fpm](https://github.com/fortran-lang/fpm)
