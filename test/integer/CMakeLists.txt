@@ -1,1 +1,0 @@
-ADDTEST(integer)
