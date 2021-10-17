@@ -1,0 +1,13 @@
+name = "fortnra-numeric"
+version = "0.1.0"
+license = "MIT"
+author = "Tomohiro Degawa"
+maintainer = "degawa.tomohiro@gmail.com"
+copyright = "2021 Tomohiro Degawa"
+description = "A library handling integer, floating-point number, and non-number in modern Fortran"
+
+[library]
+source-dir="src"
+
+[test.dependencies]
+check-tool = { path = "utils/check" }
