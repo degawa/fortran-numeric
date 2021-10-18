@@ -205,7 +205,7 @@ contains
         implicit none
 
         real(real32), intent(in) :: r32
-            !! 4-bype floating-point number
+            !! 4-byte floating-point number
 
         logical :: is_positive_infinity
 
@@ -235,7 +235,7 @@ contains
         implicit none
 
         real(real64), intent(in) :: r64
-            !! 8-bype floating-point number
+            !! 8-byte floating-point number
 
         logical :: is_positive_infinity
         logical :: check_passed(3)
@@ -265,7 +265,7 @@ contains
         implicit none
 
         real(real32), intent(in) :: r32
-            !! 4-bype floating-point number
+            !! 4-byte floating-point number
 
         logical :: is_negative_infinity
         logical :: check_passed(3)
@@ -295,7 +295,7 @@ contains
         implicit none
 
         real(real64), intent(in) :: r64
-            !! 8-bype floating-point number
+            !! 8-byte floating-point number
 
         logical :: is_negative_infinity
         logical :: check_passed(3)
@@ -326,7 +326,7 @@ contains
         implicit none
 
         real(real32), intent(in) :: r32
-            !! 4-bype floating-point number
+            !! 4-byte floating-point number
 
         logical :: is_infinity
         logical :: check_passed(2)
@@ -342,7 +342,7 @@ contains
         implicit none
 
         real(real64), intent(in) :: r64
-            !! 8-bype floating-point number
+            !! 8-byte floating-point number
 
         logical :: is_infinity
         logical :: check_passed(2)
@@ -359,7 +359,7 @@ contains
         implicit none
 
         real(real32), intent(in) :: array(:)
-            !! rank 1 4-bype floating-point number
+            !! rank 1 4-byte floating-point number
 
         logical :: is_inf_contained
 
@@ -371,7 +371,7 @@ contains
         implicit none
 
         real(real32), intent(in) :: array(:, :)
-            !! rank 2 4-bype floating-point number
+            !! rank 2 4-byte floating-point number
 
         logical :: is_inf_contained
 
@@ -383,7 +383,7 @@ contains
         implicit none
 
         real(real32), intent(in) :: array(:, :, :)
-            !! rank 3 4-bype floating-point number
+            !! rank 3 4-byte floating-point number
 
         logical :: is_inf_contained
 
@@ -395,7 +395,7 @@ contains
         implicit none
 
         real(real64), intent(in) :: array(:)
-            !! rank 1 8-bype floating-point number
+            !! rank 1 8-byte floating-point number
 
         logical :: is_inf_contained
 
@@ -407,7 +407,7 @@ contains
         implicit none
 
         real(real64), intent(in) :: array(:, :)
-            !! rank 2 8-bype floating-point number
+            !! rank 2 8-byte floating-point number
 
         logical :: is_inf_contained
 
@@ -419,7 +419,7 @@ contains
         implicit none
 
         real(real64), intent(in) :: array(:, :, :)
-            !! rank 3 8-bype floating-point number
+            !! rank 3 8-byte floating-point number
 
         logical :: is_inf_contained
 
@@ -432,7 +432,7 @@ contains
         implicit none
 
         real(real32), intent(in) :: r32
-            !! 4-bype floating-point number
+            !! 4-byte floating-point number
 
         logical :: check_passed(3)
 
@@ -448,7 +448,7 @@ contains
         implicit none
 
         real(real64), intent(in) :: r64
-            !! 8-bype floating-point number
+            !! 8-byte floating-point number
 
         logical :: check_passed(3)
 
@@ -464,7 +464,7 @@ contains
         implicit none
 
         real(real32), intent(in) :: array(:)
-           !! rank 1 4-bype floating-point number
+           !! rank 1 4-byte floating-point number
 
         logical :: is_non_number_contained
 
@@ -476,7 +476,7 @@ contains
         implicit none
 
         real(real32), intent(in) :: array(:, :)
-           !! rank 2 4-bype floating-point number
+           !! rank 2 4-byte floating-point number
 
         logical :: is_non_number_contained
 
@@ -488,7 +488,7 @@ contains
         implicit none
 
         real(real32), intent(in) :: array(:, :, :)
-           !! rank 3 4-bype floating-point number
+           !! rank 3 4-byte floating-point number
 
         logical :: is_non_number_contained
 
@@ -500,7 +500,7 @@ contains
         implicit none
 
         real(real64), intent(in) :: array(:)
-           !! rank 1 8-bype floating-point number
+           !! rank 1 8-byte floating-point number
 
         logical :: is_non_number_contained
 
@@ -512,7 +512,7 @@ contains
         implicit none
 
         real(real64), intent(in) :: array(:, :)
-            !! rank 2 8-bype floating-point number
+            !! rank 2 8-byte floating-point number
 
         logical :: is_non_number_contained
 
@@ -524,7 +524,7 @@ contains
         implicit none
 
         real(real64), intent(in) :: array(:, :, :)
-            !! rank 3 8-bype floating-point number
+            !! rank 3 8-byte floating-point number
 
         logical :: is_non_number_contained
 
