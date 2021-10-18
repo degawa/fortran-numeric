@@ -55,7 +55,7 @@ cmake --build build
 ```
 
 Mod files, `numeric_integer.mod`, `numeric_real.mod`, and `numeric_nonnumber.mod`, will be created in build/mod directory.
-A library named `fortran-numeric.lib` or `libforntra-numeric.a` and will be created in build/lib directory.
+A library named `fortran-numeric.lib` or `libforntra-numeric.a` will be created in build/lib directory.
 To install library, copy mod files to your include directory and library to your library directory.
 
 An additional option `-DCMAKE_BUILD_TYPE={Debug|Release}` can used to provide the compiler options for debugging or optimizaion.
