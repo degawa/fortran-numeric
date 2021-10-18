@@ -1,3 +1,4 @@
+#:include "../common.fypp"
 !| The `numeric_real` module provides constants and procedures related to floating-point number.
 !
 ! The constants include minimum and maximum values of the 4- and 8-byte floating-point number types
@@ -14,12 +15,9 @@ module numeric_real
     public :: to_string
 
     !&<
-    real(real32), public, parameter :: result_type_real32 = 0.0_real32
-        !! A constant to represent 4-byte floating-point number.
-        !! This constant is used to specify the result kind of the intrinsic functions.
-    real(real64), public, parameter :: result_type_real64 = 0.0_real64
-        !! A constant to represent 8-byte floating-point number.
-        !! This constant is used to specify the result kind of the intrinsic functions.
+    #:for real_kind in REAL_KINDS
+        real(${real_kind}$), public, parameter :: result_type_${real_kind}$ = 0.0_${real_kind}$
+    #:endfor
     !&>
 
     real(real32), public, parameter :: Real32_Positive_Min = real(Z'00800000', real32)
@@ -46,8 +44,9 @@ module numeric_real
         !! The machine epsilon of 8-byte floating-point number `≈2.2204460492503131E-016`
 
     interface to_string
-        procedure :: real32_to_string
-        procedure :: real64_to_string
+        #:for real_kind in REAL_KINDS
+            procedure :: ${real_kind}$_to_string
+        #:endfor
     end interface
 
     ! set the default format to recover the internal binary representation when reading decimal representation in ASCII format.
@@ -58,65 +57,35 @@ module numeric_real
     integer(int32), private, parameter :: MaxLength_of_Buffer = 255
 
 contains
-    !| Converts a 4-byte floating-point number to a string based on a format passed as an argument.
-    ! When the format is not given, `'(e18.10E3)'` is used as the format
-    ! to recover the internal binary representation when reading decimal representation in ASCII format.
-    ! A zero-length string is returned when the convert is failed.
-    function real32_to_string(r32, format) result(str)
-        implicit none
-        !&<
-        real(real32), intent(in)            :: r32
-            !! 4-byte floating-point number
-        character(*), intent(in), optional  :: format
+    #:for real_kind, real_byte in REAL_KINDS_BYTES
+        !| Converts a ${real_byte}$-byte floating-point number to a string based on a format passed as an argument.
+        ! A zero-length string is returned when the convert is failed.
+        function ${real_kind}$_to_string(val, format) result(str)
+            implicit none
+            !&<
+            real(${real_kind}$), intent(in)            :: val
+            !! floating-point number
+            character(*), intent(in), optional  :: format
             !! format for string conversion
-        !&>
-        character(:), allocatable :: str
+            !&>
+            character(:), allocatable :: str
 
-        character(MaxLength_of_Buffer) :: buffer
-        integer :: IOStatus
-        character(MaxLength_of_IOMessage) :: IOMessage
+            character(MaxLength_of_Buffer) :: buffer
+            integer :: IOStatus
+            character(MaxLength_of_IOMessage) :: IOMessage
 
-        if (present(format)) then
-            write (buffer, format, iostat=IOStatus, iomsg=IOMessage) r32
-        else
-            write (buffer, default_real32_format, iostat=IOStatus, iomsg=IOMessage) r32
-        end if
-        if (IOStatus /= 0) then
-            write (error_unit, '(A)') trim(IOMessage)
-            buffer = "" ! returns a zero-length string
-        end if
+            if (present(format)) then
+                write (buffer, format, iostat=IOStatus, iomsg=IOMessage) val
+            else
+                write (buffer, default_${real_kind}$_format, iostat=IOStatus, iomsg=IOMessage) val
+            end if
+            if (IOStatus /= 0) then
+                write (error_unit, '(A)') trim(IOMessage)
+                buffer = "" ! returns a zero-length string
+            end if
 
-        str = trim(adjustl(buffer))
-    end function real32_to_string
+            str = trim(adjustl(buffer))
+        end function ${real_kind}$_to_string
 
-    !| Converts an 8-byte floating-point number to a string based on a format passed as an argument.
-    ! When the format is not given, `'(e30.19E4)'` is used as the format
-    ! to recover the internal binary representation when reading decimal representation in ASCII format.
-    ! A zero-length string is returned when the convert is failed.
-    function real64_to_string(r64, format) result(str)
-        implicit none
-        !&<
-        real(real64), intent(in)            :: r64
-            !! 8-byte floating-point number
-        character(*), intent(in), optional  :: format
-            !! format for string conversion
-        !&>
-        character(:), allocatable :: str
-
-        character(MaxLength_of_Buffer) :: buffer
-        integer :: IOStatus
-        character(MaxLength_of_IOMessage) :: IOMessage
-
-        if (present(format)) then
-            write (buffer, format, iostat=IOStatus, iomsg=IOMessage) r64
-        else
-            write (buffer, default_real64_format, iostat=IOStatus, iomsg=IOMessage) r64
-        end if
-        if (IOStatus /= 0) then
-            write (error_unit, '(A)') trim(IOMessage)
-            buffer = "" ! returns a zero-length string
-        end if
-
-        str = trim(adjustl(buffer))
-    end function real64_to_string
+    #:endfor
 end module numeric_real
