@@ -1,0 +1,175 @@
+#:include "../common.fypp"
+!| The `numeric_nonNumber` module provides constants and procedures related to not-a-number and infinity.
+!
+! The constants include the quiet nan and positive/negative inf
+! in the 4- and 8-byte floating point number types provided by the Fortran standard.
+! 16-byte floating point number type is not supported yet.
+!
+! The procedures include functions to check whether a floating-point number is a quiet nan, positive/negative inf
+! and whether an array of floating-point numbers has at least one quiet nan, positive/negative inf value.
+!
+module numeric_nonNumber
+    use, intrinsic :: iso_fortran_env
+    use, intrinsic :: ieee_arithmetic
+    use :: numeric_real, only:result_type_real32, result_type_real64
+    implicit none
+    private
+    public :: has_nan
+    public :: is_positive_inf
+    public :: is_negative_inf
+    public :: is_inf
+    public :: has_inf
+    public :: is_non_number
+    public :: has_non_number
+
+    !| Returns `.true.` if an array of floating-point numbers has at least one nan.
+    interface has_nan
+        #:for real_kind in REAL_KINDS
+            #:for rank in RANKS
+                procedure :: has_nan_${real_kind}$_rank${rank}$
+            #:endfor
+        #:endfor
+    end interface
+
+contains
+
+    #:for real_kind in REAL_KINDS
+        #:for rank in RANKS
+            logical function has_nan_${real_kind}$_rank${rank}$ (array)
+                implicit none
+                real(${real_kind}$), intent(in) :: array${ranksuffix(rank)}$
+
+                has_nan_${real_kind}$_rank${rank}$ = any(ieee_is_nan(array))
+            end function has_nan_${real_kind}$_rank${rank}$
+        #:endfor
+    #:endfor
+
+    !------------------------------------------------------------------!
+    !| Returns `.true.` when a floating-point number is positive inf
+    #:for real_kind in REAL_KINDS
+        elemental function is_positive_inf_${real_kind}$ (val) result(is_positive_infinity)
+            implicit none
+
+            real(${real_kind}$), intent(in) :: val
+            !! floating-point number
+
+            logical :: is_positive_infinity
+
+            logical :: check_passed(3)
+            check_passed(:) = .false.
+
+            ! 1. the value is equal to positive infinity
+            if (val == ieee_value(val, ieee_positive_inf)) then
+                check_passed(1) = .true.
+            end if
+
+            ! 2. the value subtracted 1 is equal to positive infinity
+            if (val - 1 == ieee_value(val, ieee_positive_inf)) then
+                check_passed(2) = .true.
+            end if
+
+            ! 3. the value is greater than the positive maximum value
+            if (val > huge(result_type_${real_kind}$)) then
+                check_passed(3) = .true.
+            end if
+
+            is_positive_infinity = all(check_passed)
+        end function is_positive_inf_${real_kind}$
+    #:endfor
+
+    !------------------------------------------------------------------!
+    !| Returns `.true.` when a floating-point number is negative inf
+    #:for real_kind in REAL_KINDS
+        elemental function is_negative_inf_${real_kind}$ (val) result(is_negative_infinity)
+            implicit none
+
+            real(${real_kind}$), intent(in) :: val
+            !! floating-point number
+
+            logical :: is_negative_infinity
+            logical :: check_passed(3)
+
+            check_passed(:) = .false.
+
+            ! 1. the value is equal to negative infinity
+            if (val == ieee_value(val, ieee_negative_inf)) then
+                check_passed(1) = .true.
+            end if
+
+            ! 2. the value added 1 is equal to negative infinity
+            if (val + 1 == ieee_value(val, ieee_negative_inf)) then
+                check_passed(2) = .true.
+            end if
+
+            ! 3. the value is less than the negative maximum value
+            if (val < -huge(result_type_${real_kind}$)) then
+                check_passed(3) = .true.
+            end if
+
+            is_negative_infinity = all(check_passed)
+        end function is_negative_inf_${real_kind}$
+    #:endfor
+
+    !|  Returns `.true.` when floating-point number is positive or negative inf
+    #:for real_kind in REAL_KINDS
+        elemental function is_inf_${real_kind}$ (val) result(is_infinity)
+            implicit none
+
+            real(${real_kind}$), intent(in) :: val
+            !! floating-point number
+
+            logical :: is_infinity
+            logical :: check_passed(2)
+
+            check_passed(1) = is_positive_inf(val)
+            check_passed(2) = is_negative_inf(val)
+
+            is_infinity = any(check_passed)
+        end function is_inf_${real_kind}$
+    #:endfor
+
+    !------------------------------------------------------------------!
+    #:for real_kind in REAL_KINDS
+        #:for rank in RANKS
+            !| Returns `.true.` if rank ${rank}$ floating-point number array has at least one positive or negative inf.
+            logical function has_inf_${real_kind}$_rank${rank}$ (array)
+                implicit none
+                real(${real_kind}$), intent(in) :: array${ranksuffix(rank)}$
+
+                has_inf_${real_kind}$_rank${rank}$ = any(is_inf(array))
+            end function has_inf_${real_kind}$_rank${rank}$
+        #:endfor
+    #:endfor
+
+    !------------------------------------------------------------------!
+    !| Returns `.true.` when floating-point number array has at least one quiet nan, positive, or negative inf.
+    #:for real_kind in REAL_KINDS
+        elemental logical function is_non_number_${real_kind}$ (val)
+            implicit none
+
+            real(${real_kind}$), intent(in) :: val
+            !! 4-bype floating-point number
+
+            logical :: check_passed(3)
+
+            check_passed(1) = is_positive_inf(val)
+            check_passed(2) = is_negative_inf(val)
+            check_passed(3) = ieee_is_nan(val)
+
+            is_non_number_real32 = any(check_passed)
+        end function is_non_number_${real_kind}$
+    #:endfor
+    !------------------------------------------------------------------!
+    #:for real_kind in REAL_KINDS
+        #:for rank in RANKS
+            !| Returns `.true.` if rank ${rank}$ floating-point number array has at least one quiet nan, positive, or negative inf.
+            logical function has_non_number_${real_kind}$_rank${rank}$ (array)
+                implicit none
+                real(${real_kind}$), intent(in) :: array${ranksuffix(rank)}$
+
+                has_non_number_${real_kind}$_rank${rank}$ = any(is_non_number(array))
+            end function has_non_number_${real_kind}$_rank${rank}$
+        #:endfor
+    #:endfor
+
+end module numeric_nonNumber
