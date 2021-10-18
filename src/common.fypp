@@ -3,8 +3,14 @@
 #! number of bits of integer type
 #:set INTEGER_BITS = [8, 16, 32, 64]
 
+#! number of bytes of integer type
+#:set INTEGER_BYTES = [1, 2, 4 , 8]
+
 #! nubmer of bits of real type
 #:set REAL_BITS = [32, 64]
+
+#! nubmer of bytes of real type
+#:set REAL_BYTES = [4, 8]
 
 #! integer kinds
 #:set INTEGER_KINDS = ["int{}".format(bits) for bits in INTEGER_BITS]
@@ -15,6 +21,9 @@
 #! (kind, type) tuple for integer
 #:set INTEGER_KINDS_TYPES = list(zip(INTEGER_KINDS, INTEGER_TYPES))
 
+#! (kind, bytes) tuple for integer
+#:set INTEGER_KINDS_BYTES = list(zip(INTEGER_KINDS, INTEGER_BYTES))
+
 #! real kinds
 #:set REAL_KINDS = ["real{}".format(bits) for bits in REAL_BITS]
 
@@ -23,6 +32,9 @@
 
 #! (kind, type) tuple for real
 #:set REAL_KINDS_TYPES = list(zip(REAL_KINDS, REAL_TYPES))
+
+#! (kind, byte) tuple for real
+#:set REAL_KINDS_BYTES = list(zip(REAL_KINDS, REAL_BYTES))
 
 #! target array rank
 #:set MAX_RANK = 7
