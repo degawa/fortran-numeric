@@ -1,0 +1,38 @@
+#:mute
+
+#! number of bits of integer type
+#:set INTEGER_BITS = [8, 16, 32, 64]
+
+#! nubmer of bits of real type
+#:set REAL_BITS = [32, 64]
+
+#! integer kinds
+#:set INTEGER_KINDS = ["int{}".format(bits) for bits in INTEGER_BITS]
+
+#! integer types
+#:set INTEGER_TYPES = ["integer({})".format(kind) for kind in INTEGER_KINDS]
+
+#! (kind, type) tuple for integer
+#:set INTEGER_KINDS_TYPES = list(zip(INTEGER_KINDS, INTEGER_TYPES))
+
+#! real kinds
+#:set REAL_KINDS = ["real{}".format(bits) for bits in REAL_BITS]
+
+#! real types
+#:set REAL_TYPES = ["real({})".format(kind) for kind in REAL_KINDS]
+
+#! (kind, type) tuple for real
+#:set REAL_KINDS_TYPES = list(zip(REAL_KINDS, REAL_TYPES))
+
+#! target array rank
+#:set MAX_RANK = 7
+
+#! rank
+#:set RANKS = [rank for rank in range(1, MAX_RANK+1)]
+
+#! rank suffix such as (:), (:,:)
+#:def ranksuffix(rank)
+#{if rank > 0}#(${":" + ",:" * (rank - 1)}$)#{endif}#
+#:enddef
+
+#:endmute
