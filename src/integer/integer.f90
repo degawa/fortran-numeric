@@ -272,7 +272,7 @@ contains
         implicit none
         !&<
         integer(int16), intent(in)    :: i16
-            !! 1-byte integer
+            !! 2-byte integer
         !&>
 
         if (i16 >= 0) then
@@ -287,7 +287,7 @@ contains
         implicit none
         !&<
         integer(int32), intent(in)    :: i32
-            !! 1-byte integer
+            !! 4-byte integer
         !&>
 
         if (i32 >= 0) then
@@ -302,7 +302,7 @@ contains
         implicit none
         !&<
         integer(int64), intent(in)    :: i64
-            !! 1-byte integer
+            !! 8-byte integer
         !&>
 
         if (i64 >= 0) then
@@ -329,7 +329,7 @@ contains
         implicit none
         !&<
         integer(int16), intent(in)    :: i16
-            !! 1-byte integer
+            !! 2-byte integer
         !&>
 
         is_negative_int16 = .not. is_positive(i16)
@@ -340,7 +340,7 @@ contains
         implicit none
         !&<
         integer(int32), intent(in)    :: i32
-            !! 1-byte integer
+            !! 4-byte integer
         !&>
 
         is_negative_int32 = .not. is_positive(i32)
@@ -351,7 +351,7 @@ contains
         implicit none
         !&<
         integer(int64), intent(in)    :: i64
-            !! 1-byte integer
+            !! 8-byte integer
         !&>
 
         is_negative_int64 = .not. is_positive(i64)
