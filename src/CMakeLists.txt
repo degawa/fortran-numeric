@@ -1,5 +1,21 @@
 set(LIBNAME ${PROJECT_NAME})
 
+# generating source files using fypp
+set(FYPP_SRCS
+    integer
+    real
+    nonNumber
+)
+
+set(F90_SRCS)
+foreach(SRC IN LISTS FYPP_SRCS)
+    add_custom_command(
+        OUTPUT ${CMAKE_CURRENT_SOURCE_DIR}/${SRC}/${SRC}.f90
+        COMMAND fypp ${CMAKE_CURRENT_SOURCE_DIR}/${SRC}/${SRC}.fy90 ${CMAKE_CURRENT_SOURCE_DIR}/${SRC}/${SRC}.f90
+        MAIN_DEPENDENCY ${CMAKE_CURRENT_SOURCE_DIR}/${SRC}/${SRC}.fy90
+    )
+endforeach()
+
 add_library(${LIBNAME} STATIC)
 target_sources(${LIBNAME}
     PUBLIC
@@ -16,4 +32,4 @@ set_target_properties(${LIBNAME}
 )
 
 
-add_subdirectory(tests)
+# add_subdirectory(tests)
