@@ -6,11 +6,6 @@
 #! number of bytes of integer type
 #:set INTEGER_BYTES = [1, 2, 4 , 8]
 
-#! nubmer of bits of real type
-#:set REAL_BITS = [32, 64]
-
-#! nubmer of bytes of real type
-#:set REAL_BYTES = [4, 8]
 
 #! integer kinds
 #:set INTEGER_KINDS = ["int{}".format(bits) for bits in INTEGER_BITS]
@@ -26,6 +21,12 @@
 
 #! (kind, bytes) tuple for integer
 #:set INTEGER_KINDS_BYTES = list(zip(INTEGER_KINDS, INTEGER_BYTES))
+
+#! nubmer of bits of real type
+#:set REAL_BITS = [32, 64]
+
+#! nubmer of bytes of real type
+#:set REAL_BYTES = [4, 8]
 
 #! real kinds
 #:set REAL_KINDS = ["real{}".format(bits) for bits in REAL_BITS]
