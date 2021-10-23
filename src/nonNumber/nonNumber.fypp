@@ -22,6 +22,58 @@ module numeric_nonNumber
     public :: is_non_number
     public :: has_non_number
 
+    integer(int32), private, parameter :: Real32_Quiet_NaN_To_Int32 = -4194304_int32
+        !! The integer representation of a binary representation of 4-byte floating-point quiet nan.<br>
+        !! It is confirmed by executing the code below:
+        !!```Fortran
+        !!print *, transfer(ieee_value(result_type_real32, ieee_quiet_nan), result_type_int32)
+        !!```
+    integer(int32), private, parameter :: Real32_Positive_Inf_To_Int32 = 2139095040_int32
+        !! The integer representation of a binary representation of 4-byte floating-point positive inf.<br>
+        !! It is confirmed by executing the code below:
+        !!```Fortran
+        !!print *, transfer(ieee_value(result_type_real32, ieee_positive_inf), result_type_int32)
+        !!```
+    integer(int32), private, parameter :: Real32_Negative_Inf_To_Int32 = -8388608_int32
+        !! The integer representation of a binary representation of 4-byte floating-point negative inf.<br>
+        !! It is confirmed by executing the code below:
+        !!```Fortran
+        !!print *, transfer(ieee_value(result_type_real32, ieee_negative_inf), result_type_int32)
+        !!```
+    integer(int64), private, parameter :: Real64_Quiet_NaN_To_Int64 = -2251799813685248_int64
+        !! The integer representation of a binary representation of 8-byte floating-point quiet nan.<br>
+        !! It is confirmed by executing the code below:
+        !!```Fortran
+        !!print *, transfer(ieee_value(result_type_real64, ieee_quiet_nan), result_type_int64)
+        !!```
+    integer(int64), private, parameter :: Real64_Positive_Inf_To_Int64 = 9218868437227405312_int64
+        !! The integer representation of a binary representation of 8-byte floating-point positive inf.<br>
+        !! It is confirmed by executing the code below:
+        !!```Fortran
+        !!print *, transfer(ieee_value(result_type_real64, ieee_positive_inf), result_type_int64)
+        !!```
+    integer(int64), private, parameter :: Real64_Negative_Inf_To_Int64 = -4503599627370496_int64
+        !! The integer representation of a binary representation of 8-byte floating-point negative inf.<br>
+        !! It is confirmed by executing the code below:
+        !!```Fortran
+        !!print *, transfer(ieee_value(result_type_real64, ieee_negative_inf), result_type_int64)
+        !!```
+
+    ! The type conversion by intrinsic function such as `real(Z'FFC00000', real32)` shows range-check warning
+    real(real32), public, parameter :: Real32_Quiet_NaN = transfer(Real32_Quiet_NaN_To_Int32, result_type_real32)
+        !! 4-byte floating-point quiet nan.
+    real(real32), public, parameter :: Real32_Positive_Inf = transfer(Real32_Positive_Inf_To_Int32, result_type_real32)
+        !! 4-byte floating-point positive inf.
+    real(real32), public, parameter :: Real32_Negative_Inf = transfer(Real32_Negative_Inf_To_Int32, result_type_real32)
+        !! 4-byte floating-point negative inf.
+
+    real(real64), public, parameter :: Real64_Quiet_NaN = transfer(Real64_Quiet_NaN_To_Int64, result_type_real64)
+        !! 8-byte floating-point quiet nan.
+    real(real64), public, parameter :: Real64_Positive_Inf = transfer(Real64_Positive_Inf_To_Int64, result_type_real64)
+        !! 8-byte floating-point positive inf.
+    real(real64), public, parameter :: Real64_Negative_Inf = transfer(Real64_Negative_Inf_To_Int64, result_type_real64)
+        !! 8-byte floating-point negative inf.
+
     !| Returns `.true.` if an array of floating-point numbers has at least one nan.
     interface has_nan
         #:for real_kind in REAL_KINDS
@@ -31,13 +83,62 @@ module numeric_nonNumber
         #:endfor
     end interface
 
-contains
+    !|  Returns `.true.` when a floating-point number is positive inf
+    interface is_positive_inf
+        #:for real_kind in REAL_KINDS
+            procedure :: is_positive_inf_${real_kind}$
+        #:endfor
+    end interface
 
-    #:for real_kind in REAL_KINDS
+    !|  Returns `.true.` when a floating-point number is negative inf
+    interface is_negative_inf
+        #:for real_kind in REAL_KINDS
+            procedure :: is_negative_inf_${real_kind}$
+        #:endfor
+    end interface
+
+    !|  Returns `.true.` when a floating-point number is positive or negative inf
+    interface is_inf
+        #:for real_kind in REAL_KINDS
+            procedure :: is_inf_${real_kind}$
+        #:endfor
+    end interface
+
+    !| Returns `.true.` if an array of floating-point numbers has at least one positive or negative inf.
+    interface has_inf
+        #:for real_kind in REAL_KINDS
+            #:for rank in RANKS
+                procedure :: has_inf_${real_kind}$_rank${rank}$
+            #:endfor
+        #:endfor
+    end interface
+
+    !|  Returns `.true.` when a floating-point number is quiet nan, positive inf, or negative inf
+    interface is_non_number
+        #:for real_kind in REAL_KINDS
+            procedure :: is_non_number_${real_kind}$
+        #:endfor
+    end interface
+
+    !| Returns `.true.` if an array of floating-point numbers has at least one quiet nan, positive, or negative inf.
+    interface has_non_number
+        #:for real_kind in REAL_KINDS
+            #:for rank in RANKS
+                procedure :: has_non_number_${real_kind}$_rank${rank}$
+            #:endfor
+        #:endfor
+    end interface
+
+contains
+    !------------------------------------------------------------------!
+    #:for real_kind, real_byte in REAL_KINDS_BYTES
         #:for rank in RANKS
+
+            !| Returns `.true.` if rank ${rank}$ ${real_byte}$-byte floating-point number array has at least one quiet nan.
             logical function has_nan_${real_kind}$_rank${rank}$ (array)
                 implicit none
                 real(${real_kind}$), intent(in) :: array${ranksuffix(rank)}$
+                !! rank ${rank}$ ${real_byte}$-byte floating point number array
 
                 has_nan_${real_kind}$_rank${rank}$ = any(ieee_is_nan(array))
             end function has_nan_${real_kind}$_rank${rank}$
@@ -45,13 +146,14 @@ contains
     #:endfor
 
     !------------------------------------------------------------------!
-    !| Returns `.true.` when a floating-point number is positive inf
-    #:for real_kind in REAL_KINDS
-        elemental function is_positive_inf_${real_kind}$ (val) result(is_positive_infinity)
+    #:for real_kind, real_byte in REAL_KINDS_BYTES
+
+        !| Returns `.true.` when a ${real_byte}$-byte floating-point number is positive inf
+        elemental function is_positive_inf_${real_kind}$(val) result(is_positive_infinity)
             implicit none
 
             real(${real_kind}$), intent(in) :: val
-            !! floating-point number
+            !! ${real_byte}$-byte floating-point number
 
             logical :: is_positive_infinity
 
@@ -78,13 +180,14 @@ contains
     #:endfor
 
     !------------------------------------------------------------------!
-    !| Returns `.true.` when a floating-point number is negative inf
-    #:for real_kind in REAL_KINDS
+    #:for real_kind, real_byte in REAL_KINDS_BYTES
+
+        !| Returns `.true.` when a ${real_byte}$ floating-point number is negative inf
         elemental function is_negative_inf_${real_kind}$ (val) result(is_negative_infinity)
             implicit none
 
             real(${real_kind}$), intent(in) :: val
-            !! floating-point number
+            !! ${real_byte}$ floating-point number
 
             logical :: is_negative_infinity
             logical :: check_passed(3)
@@ -110,13 +213,15 @@ contains
         end function is_negative_inf_${real_kind}$
     #:endfor
 
-    !|  Returns `.true.` when floating-point number is positive or negative inf
-    #:for real_kind in REAL_KINDS
+    !------------------------------------------------------------------!
+    #:for real_kind, real_byte in REAL_KINDS_BYTES
+
+        !|  Returns `.true.` when a ${real_byte}$ floating-point number is positive or negative inf
         elemental function is_inf_${real_kind}$ (val) result(is_infinity)
             implicit none
 
             real(${real_kind}$), intent(in) :: val
-            !! floating-point number
+            !! ${real_byte}$ floating-point number
 
             logical :: is_infinity
             logical :: check_passed(2)
@@ -129,12 +234,14 @@ contains
     #:endfor
 
     !------------------------------------------------------------------!
-    #:for real_kind in REAL_KINDS
+    #:for real_kind, real_byte in REAL_KINDS_BYTES
         #:for rank in RANKS
-            !| Returns `.true.` if rank ${rank}$ floating-point number array has at least one positive or negative inf.
+
+            !| Returns `.true.` if rank ${rank}$ ${real_byte}$ floating-point number array has at least one positive or negative inf.
             logical function has_inf_${real_kind}$_rank${rank}$ (array)
                 implicit none
                 real(${real_kind}$), intent(in) :: array${ranksuffix(rank)}$
+                !! rank ${rank}$ ${real_byte}$-byte floating point number array
 
                 has_inf_${real_kind}$_rank${rank}$ = any(is_inf(array))
             end function has_inf_${real_kind}$_rank${rank}$
@@ -142,13 +249,14 @@ contains
     #:endfor
 
     !------------------------------------------------------------------!
-    !| Returns `.true.` when floating-point number array has at least one quiet nan, positive, or negative inf.
-    #:for real_kind in REAL_KINDS
+    #:for real_kind, real_byte in REAL_KINDS_BYTES
+        !| Returns `.true.` when a ${real_byte}$-byte floating-point number array has at least one quiet nan, positive, or negative inf.
+
         elemental logical function is_non_number_${real_kind}$ (val)
             implicit none
 
             real(${real_kind}$), intent(in) :: val
-            !! 4-bype floating-point number
+            !! ${real_byte}$-bype floating-point number
 
             logical :: check_passed(3)
 
@@ -159,17 +267,20 @@ contains
             is_non_number_real32 = any(check_passed)
         end function is_non_number_${real_kind}$
     #:endfor
+
     !------------------------------------------------------------------!
-    #:for real_kind in REAL_KINDS
+    #:for real_kind, real_byte in REAL_KINDS_BYTES
         #:for rank in RANKS
-            !| Returns `.true.` if rank ${rank}$ floating-point number array has at least one quiet nan, positive, or negative inf.
+
+            !| Returns `.true.` if rank ${rank}$ ${real_byte}$-byte floating-point number array has
+            ! at least one quiet nan, positive, or negative inf.
             logical function has_non_number_${real_kind}$_rank${rank}$ (array)
                 implicit none
                 real(${real_kind}$), intent(in) :: array${ranksuffix(rank)}$
+                !! rank ${rank}$ ${real_byte}$-byte floating point number array
 
                 has_non_number_${real_kind}$_rank${rank}$ = any(is_non_number(array))
             end function has_non_number_${real_kind}$_rank${rank}$
         #:endfor
     #:endfor
-
 end module numeric_nonNumber
