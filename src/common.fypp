@@ -13,9 +13,6 @@
 #! integer types
 #:set INTEGER_TYPES = ["integer({})".format(kind) for kind in INTEGER_KINDS]
 
-#! integer kinds and bytes
-#:set INTEGER_KINDS_BYTES = INTEGER_KINDS + INTEGER_BYTES
-
 #! (kind, type) tuple for integer
 #:set INTEGER_KINDS_TYPES = list(zip(INTEGER_KINDS, INTEGER_TYPES))
 
