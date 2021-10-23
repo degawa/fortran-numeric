@@ -264,7 +264,7 @@ contains
             check_passed(2) = is_negative_inf(val)
             check_passed(3) = ieee_is_nan(val)
 
-            is_non_number_real32 = any(check_passed)
+            is_non_number_${real_kind}$ = any(check_passed)
         end function is_non_number_${real_kind}$
     #:endfor
 
