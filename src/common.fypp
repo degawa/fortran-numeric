@@ -38,7 +38,7 @@
 #:set REAL_KINDS_BYTES = list(zip(REAL_KINDS, REAL_BYTES))
 
 #! target array rank
-#:set MAX_RANK = 7
+#:set MAX_RANK = 3
 
 #! rank
 #:set RANKS = [rank for rank in range(1, MAX_RANK+1)]
