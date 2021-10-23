@@ -16,8 +16,10 @@ module numeric_integer
     public :: is_positive
     public :: is_negative
 
-    #:for int_kind in INTEGER_KINDS
+    #:for int_kind, int_byte in INTEGER_KINDS_BYTES
         integer(${int_kind}$), public, parameter :: result_type_${int_kind}$ = 0_${int_kind}$
+        !! A constant to represent ${int_byte}$-byte signed integer.
+        !! This constant is used to specify the result kind of the intrinsic functions.
     #:endfor
 
     integer(int8), public, parameter :: Int8_Max = int(Z'7F', int8)
@@ -53,7 +55,6 @@ module numeric_integer
             procedure :: ${int_kind}$_to_string_with_format
             procedure :: ${int_kind}$_to_string_with_digits
         #:endfor
-
     end interface
 
     !| Returns `.true.` if an integer is positive, including 0.
@@ -76,13 +77,14 @@ module numeric_integer
     integer(int32), private, parameter :: MaxLength_of_Buffer = 255
 
 contains
-    !| Gets the number of digits of 1-byte integer.
-    #:for int_kind in INTEGER_KINDS
+    #:for int_kind, int_byte in INTEGER_KINDS_BYTES
+
+    !| Gets the number of digits of ${int_byte}$-byte integer.
         pure function get_digit_${int_kind}$ (val) result(digits)
             implicit none
             !&<
             integer(${int_kind}$), intent(in)    :: val
-                !! integer value
+                !! ${int_byte}$-byte integer
             !&>
             integer(int32) :: digits
                 !! A number of digits in `val` value
@@ -100,15 +102,15 @@ contains
     #:endfor
 
     !------------------------------------------------------------------!
-    !| Converts an integer to a string based on a format passed as an argument.
-    ! When the format is not given, `'(i0.0)'` is used as the format.
-    ! A zero-length string is returned when the convert is failed.
-    #:for int_kind in INTEGER_KINDS
+    #:for int_kind, int_byte in INTEGER_KINDS_BYTES
+        !| Converts a ${int_byte}$-byte integer to a string based on a format passed as an argument.
+        ! When the format is not given, `'(i0.0)'` is used as the format.
+        ! A zero-length string is returned when the convert is failed.
         function ${int_kind}$_to_string_with_format(val, format) result(str)
             implicit none
             !&<
             integer(${int_kind}$)  , intent(in)            :: val
-                !! integer value
+                !! ${int_byte}$-byte integer
             character(*)    , intent(in), optional  :: format
                 !! format for string conversion
             !&>
@@ -136,15 +138,17 @@ contains
         end function ${int_kind}$_to_string_with_format
     #:endfor
 
-    !|A function converts an integer to a string based on the number of digits and zero-filling digits passed as arguments.
-    ! When the format is not given, `'(i0.0)'` is used as the format.
-    ! A zero-length string is returned when the convert is failed.
-    #:for int_kind in INTEGER_KINDS
+    #:for int_kind, int_byte in INTEGER_KINDS_BYTES
+
+        !|A function converts a ${int_byte}$-byte integer to a string
+        ! based on the number of digits and zero-filling digits passed as arguments.
+        ! When the format is not given, `'(i0.0)'` is used as the format.
+        ! A zero-length string is returned when the convert is failed.
         function ${int_kind}$_to_string_with_digits(val, digit, zerofill) result(str)
             implicit none
             !&<
             integer(${int_kind}$), intent(in)              :: val
-                !! integer value
+                !! ${int_byte}$-byte integer
             integer(int32), intent(in)              :: digit
                 !! The number of digits in the converted string
             integer(int32), intent(in), optional    :: zerofill
@@ -185,16 +189,17 @@ contains
     #:endfor
 
     !------------------------------------------------------------------!
-    #:for int_kind in INTEGER_KINDS
-        !| Returns `.true.` if the integer(${int_kind}$) is positive, including 0.
+    #:for int_kind, int_byte in INTEGER_KINDS_BYTES
+
+        !| Returns `.true.` if the ${int_byte}$-byte integer is positive, including 0.
         pure logical function is_positive_${int_kind}$ (val)
             implicit none
             !&<
             integer(${int_kind}$), intent(in)    :: val
-                !! integer value
+                !! ${int_byte}$-byte integer
             !&>
 
-            if (val >= 0) then
+            if (val >= 0_${int_kind}$) then
                 is_positive_${int_kind}$ = .true.
             else
                 is_positive_${int_kind}$ = .false.
@@ -203,13 +208,14 @@ contains
     #:endfor
 
     !------------------------------------------------------------------!
-    #:for int_kind in INTEGER_KINDS
-        !| Returns `.true.` if the integer(${int_kind}$) is negative, not including 0.
+    #:for int_kind, int_byte in INTEGER_KINDS_BYTES
+
+        !| Returns `.true.` if the ${int_byte}$-byte integer is negative, not including 0.
         pure logical function is_negative_${int_kind}$ (val)
             implicit none
             !&<
             integer(${int_kind}$), intent(in)    :: val
-                !! integer value
+                !! ${int_byte}$-byte integer
             !&>
 
             is_negative_${int_kind}$ = .not. is_positive(val)
