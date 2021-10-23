@@ -15,8 +15,10 @@ module numeric_real
     public :: to_string
 
     !&<
-    #:for real_kind in REAL_KINDS
+    #:for real_kind, real_byte in REAL_KINDS_BYTES
         real(${real_kind}$), public, parameter :: result_type_${real_kind}$ = 0.0_${real_kind}$
+        !! A constant to represent ${real_byte}$-byte floating-point number.
+        !! This constant is used to specify the result kind of the intrinsic functions.
     #:endfor
     !&>
 
@@ -52,19 +54,26 @@ module numeric_real
     ! set the default format to recover the internal binary representation when reading decimal representation in ASCII format.
     character(*), private, parameter :: default_real32_format = '(e18.10E3)'
     character(*), private, parameter :: default_real64_format = '(e30.19E4)'
+    #:set REAL_FORMAT = ["'(e18.10E3)'", "'(e30.19E4)'"]
 
     integer(int32), private, parameter :: MaxLength_of_IOMessage = 255
     integer(int32), private, parameter :: MaxLength_of_Buffer = 255
 
 contains
-    #:for real_kind, real_byte in REAL_KINDS_BYTES
+    #:for idx in range(2)
+        #:set real_kind = REAL_KINDS[idx]
+        #:set real_byte = REAL_BYTES[idx]
+        #:set real_fmt  = REAL_FORMAT[idx]
+
         !| Converts a ${real_byte}$-byte floating-point number to a string based on a format passed as an argument.
+        ! When the format is not given, `${real_fmt}$` is used as the format
+        ! to recover the internal binary representation when reading decimal representation in ASCII format.
         ! A zero-length string is returned when the convert is failed.
         function ${real_kind}$_to_string(val, format) result(str)
             implicit none
             !&<
             real(${real_kind}$), intent(in)            :: val
-            !! floating-point number
+            !! ${real_byte}$-byte floating-point number
             character(*), intent(in), optional  :: format
             !! format for string conversion
             !&>
@@ -86,6 +95,5 @@ contains
 
             str = trim(adjustl(buffer))
         end function ${real_kind}$_to_string
-
     #:endfor
 end module numeric_real
