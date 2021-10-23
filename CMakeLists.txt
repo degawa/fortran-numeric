@@ -36,4 +36,9 @@ set(LIB_OUTPUT_DIR ${PROJECT_BINARY_DIR}/lib)
 message("module  file output dir: ${MOD_OUTPUT_DIR}")
 message("library file output dir: ${LIB_OUTPUT_DIR}")
 
+find_program(FYPP fypp)
+if(NOT FYPP)
+  message(FATAL_ERROR "fypp not found")
+endif()
+
 add_subdirectory(src)
