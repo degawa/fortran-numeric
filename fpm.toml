@@ -8,6 +8,3 @@ description = "A library handling integer, floating-point number, and non-number
 
 [library]
 source-dir="src"
-
-[dependencies]
-check-tool = { path = "utils/check" }
