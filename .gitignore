@@ -38,6 +38,7 @@
 *.txt
 !CMakeLists.txt
 *.lnk
+.vscode
 
 # created files and directories
 *.ilk
