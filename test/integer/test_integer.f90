@@ -1,114 +1,238 @@
-program test_integer
+module test_integer
     use, intrinsic :: iso_fortran_env
-    use :: test_check
+    use :: testdrive, only:new_unittest, unittest_type, error_type, check
+    use :: numeric_integer
     implicit none
-
-    call test_numeric_integer()
+    private
+    public :: collect_integer
 
 contains
-    subroutine test_numeric_integer()
-        use :: numeric_integer
-        implicit none
+    subroutine collect_integer(testsuite)
+        type(unittest_type), allocatable, intent(out) :: testsuite(:)
 
-        print *, "numeric integer test start"
+        testsuite = [ &
+                    new_unittest("integer parameters", test_parameters) &
+                    , new_unittest("integer is_positive()", test_is_positive) &
+                    , new_unittest("integer is_negative()", test_is_negative) &
+                    , new_unittest("integer to_string()", test_to_string) &
+                    ]
+    end subroutine collect_integer
 
-        block
-            ! int8
-            call check(Int8_Max == int(+127_int8, kind=int8), &
-                       "int8 maximun test")
+    subroutine test_parameters(error)
+        type(error_type), allocatable, intent(out) :: error
+            !! error handler
 
-            call check(Int8_Min == int(-127_int8 - 1, kind=int8), &
-                       "int8 minimum test")
+        ! int8
+        call check(error, Int8_Max, int(+127_int8, kind=int8), &
+                   "expected 127 but not")
+        if (allocated(error)) return
 
-            ! int16
-            call check(Int16_Max == int(+32767_int16, kind=int16), &
-                       "int16 maximun test")
+        call check(error, Int8_Min, int(-127_int8 - 1, kind=int8), &
+                   "expected -128 but not")
+        if (allocated(error)) return
 
-            call check(Int16_Min == int(-32767_int16 - 1, kind=int16), &
-                       "int16 minimum test")
+        ! int16
+        call check(error, Int16_Max, int(+32767_int16, kind=int16), &
+                   "expected 32767 but not")
+        if (allocated(error)) return
 
-            ! int32
-            call check(Int32_Max == int(+2147483647_int32, kind=int32), &
-                       "int32 maximun test")
+        call check(error, Int16_Min, int(-32767_int16 - 1, kind=int16), &
+                   "expected -32768 but not")
+        if (allocated(error)) return
 
-            ! int64
-            call check(Int32_Min == int(-2147483647_int32 - 1, kind=int32), &
-                       "int32 minimum test")
+        ! int32
+        call check(error, Int32_Max, int(+2147483647_int32, kind=int32), &
+                   "expected 2147483647 but not")
+        if (allocated(error)) return
 
-            call check(Int64_Max == int(+9223372036854775807_int64, kind=int64), &
-                       "int64 maximun test")
+        ! int64
+        call check(error, Int32_Min, int(-2147483647_int32 - 1, kind=int32), &
+                   "expected -2147483648 but not")
+        if (allocated(error)) return
 
-            call check(Int64_Min == int(-9223372036854775807_int64 - 1, kind=int64), &
-                       "int64 minimum test")
-        end block
+        call check(error, Int64_Max, int(+9223372036854775807_int64, kind=int64), &
+                   "expected 9223372036854775807 but not")
+        if (allocated(error)) return
 
-        block
-            call check(is_positive(1_int8), "int8 1 is positive test")
-            call check(is_positive(Int8_Max), "int8 maximum is positive test")
-            call check(is_positive(0_int8), "int8 0 is positive test")
-            call check(.not. is_positive(-1_int8), "int8 -1 is not positive test")
-            call check(.not. is_positive(Int8_Min), "int8 minimum is not positive test")
+        call check(error, Int64_Min, int(-9223372036854775807_int64 - 1, kind=int64), &
+                   "expected -9223372036854775808 but not")
+        if (allocated(error)) return
+    end subroutine test_parameters
 
-            call check(is_positive(1_int16), "int16 1 is positive test")
-            call check(is_positive(Int16_Max), "int16 maximum is positive test")
-            call check(is_positive(0_int16), "int16 0 is positive test")
-            call check(.not. is_positive(-1_int16), "int16 -1 is not positive test")
-            call check(.not. is_positive(Int16_Min), "int16 minimum is not positive test")
+    subroutine test_is_positive(error)
+        type(error_type), allocatable, intent(out) :: error
+            !! error handler
 
-            call check(is_positive(1_int32), "int32 1 is positive test")
-            call check(is_positive(Int32_Max), "int32 maximum is positive test")
-            call check(is_positive(0_int32), "int32 0 is positive test")
-            call check(.not. is_positive(-1_int32), "int32 -1 is not positive test")
-            call check(.not. is_positive(Int32_Min), "int32 minimum is not positive test")
+        ! int8
+        call check(error, is_positive(1_int8), "expected 1_int8 is positive but not")
+        if (allocated(error)) return
+        call check(error, is_positive(Int8_Max), "expected 127_int8 is positive but not")
+        if (allocated(error)) return
+        call check(error, is_positive(0_int8), "expected 0_int8 is positive but not")
+        if (allocated(error)) return
+        call check(error,.not. is_positive(-1_int8), "expected -1_int8 is not positive but not")
+        if (allocated(error)) return
+        call check(error,.not. is_positive(Int8_Min), "expected -128_int8 is not positive but not")
+        if (allocated(error)) return
 
-            call check(is_positive(1_int64), "int64 1 is positive test")
-            call check(is_positive(Int64_Max), "int64 maximum is positive test")
-            call check(is_positive(0_int64), "int64 0 is positive test")
-            call check(.not. is_positive(-1_int64), "int64 -1 is not positive test")
-            call check(.not. is_positive(Int64_Min), "int64 minimum is not positive test")
-        end block
+        ! int16
+        call check(error, is_positive(1_int16), "expected 1_int16 is positive but not")
+        if (allocated(error)) return
+        call check(error, is_positive(Int16_Max), "expected 32767_int16 is positive but not")
+        if (allocated(error)) return
+        call check(error, is_positive(0_int16), "expected 0_int16 is positive but not")
+        if (allocated(error)) return
+        call check(error,.not. is_positive(-1_int16), "expected -1_int16 is not positive but not")
+        if (allocated(error)) return
+        call check(error,.not. is_positive(Int16_Min), "expected -32768_int16 is not positive but not")
+        if (allocated(error)) return
 
-        block
-            call check(.not. is_negative(1_int8), "int8 1 is not negative test")
-            call check(.not. is_negative(Int8_Max), "int8 maximum is not negative test")
-            call check(.not. is_negative(0_int8), "int8 0 is not negative test")
-            call check(is_negative(-1_int8), "int8 -1 is negative test")
-            call check(is_negative(Int8_Min), "int8 minimum is negative test")
+        ! int32
+        call check(error, is_positive(1_int32), "expected 1_int32 is positive but not")
+        if (allocated(error)) return
+        call check(error, is_positive(Int32_Max), "expected 2147483647_int32 is positive but not")
+        if (allocated(error)) return
+        call check(error, is_positive(0_int32), "expected 0_int32 is positive but not")
+        if (allocated(error)) return
+        call check(error,.not. is_positive(-1_int32), "expected -1_int32 is not positive but not")
+        if (allocated(error)) return
+        call check(error,.not. is_positive(Int32_Min), "expected -2147483648_int32 is not positive but not")
+        if (allocated(error)) return
 
-            call check(.not. is_negative(1_int16), "int16 1 is not negative test")
-            call check(.not. is_negative(Int16_Max), "int16 maximum is not negative test")
-            call check(.not. is_negative(0_int16), "int16 0 is not negative test")
-            call check(is_negative(-1_int16), "int16 -1 is negative test")
-            call check(is_negative(Int16_Min), "int16 minimum is negative test")
+        ! int64
+        call check(error, is_positive(1_int64), "expected 1_int64 is positive but not")
+        if (allocated(error)) return
+        call check(error, is_positive(Int64_Max), "expected 9223372036854775807_int64  is positive but not")
+        if (allocated(error)) return
+        call check(error, is_positive(0_int64), " expected 0_int64 is positive but not")
+        if (allocated(error)) return
+        call check(error,.not. is_positive(-1_int64), "expected -1_int64 is not positive but not")
+        if (allocated(error)) return
+        call check(error,.not. is_positive(Int64_Min), "expected -9223372036854775808_int64 is not positive but not")
+        if (allocated(error)) return
+    end subroutine test_is_positive
 
-            call check(.not. is_negative(1_int32), "int32 1 is not negative test")
-            call check(.not. is_negative(Int32_Max), "int32 maximum is not negative test")
-            call check(.not. is_negative(0_int32), "int32 0 is not negative test")
-            call check(is_negative(-1_int32), "int32 -1 is negative test")
-            call check(is_negative(Int32_Min), "int32 minimum is negative test")
+    subroutine test_is_negative(error)
+        type(error_type), allocatable, intent(out) :: error
+            !! error handler
 
-            call check(.not. is_negative(1_int64), "int64 1 is not negative test")
-            call check(.not. is_negative(Int64_Max), "int64 maximum is not negative test")
-            call check(.not. is_negative(0_int64), "int64 0 is not negative test")
-            call check(is_negative(-1_int64), "int64 -1 is negative test")
-            call check(is_negative(Int64_Min), "int64 minimum is negative test")
+        ! int8
+        call check(error,.not. is_negative(1_int8), "expected 1_int8 is negative but not")
+        if (allocated(error)) return
+        call check(error,.not. is_negative(Int8_Max), "expected 127_int8 is negative but not")
+        if (allocated(error)) return
+        call check(error,.not. is_negative(0_int8), "expected 0_int8 is negative but not")
+        if (allocated(error)) return
+        call check(error, is_negative(-1_int8), "expected -1_int8 is not negative but not")
+        if (allocated(error)) return
+        call check(error, is_negative(Int8_Min), "expected -128_int8 is not negative but not")
+        if (allocated(error)) return
 
-        end block
+        ! int16
+        call check(error,.not. is_negative(1_int16), "expected 1_int16 is negative but not")
+        if (allocated(error)) return
+        call check(error,.not. is_negative(Int16_Max), "expected 32767_int16 is negative but not")
+        if (allocated(error)) return
+        call check(error,.not. is_negative(0_int16), "expected 0_int16 is negative but not")
+        if (allocated(error)) return
+        call check(error, is_negative(-1_int16), "expected -1_int16 is not negative but not")
+        if (allocated(error)) return
+        call check(error, is_negative(Int16_Min), "expected -32768_int16 is not negative but not")
+        if (allocated(error)) return
 
-        block
-            call check(to_string(huge(0)) == "2147483647", "to_string() integer test")
-            call check(to_string(huge(0)/100, '(i10.10)') == "0021474836", "to_string() integer with format test")
-            call check(to_string(-huge(0) - 1) == "-2147483648", "to_string() integer value test")
-            call check(to_string(100, 5) == "  100", "to_string() integer digit specification test")
-            call check(to_string(100, 2) == "**", "to_string() integer invalid digit specification test")
-            call check(to_string(100, digit=5, zerofill=6) == "00100", &
-                       "to_string() integer digit specification zero filling out of range test")
-            call check(to_string(-100, digit=5, zerofill=4) == " -0100", &
-                       "to_string() integer value digit specification zero filling test")
-            call check(to_string(-100, digit=5, zerofill=5) == "-00100", &
-                       "to_string() integer value digit specification zero filling test")
-        end block
+        ! int32
+        call check(error,.not. is_negative(1_int32), "expected 1_int32 is negative but not")
+        if (allocated(error)) return
+        call check(error,.not. is_negative(Int32_Max), "expected 2147483647_int32 is negative but not")
+        if (allocated(error)) return
+        call check(error,.not. is_negative(0_int32), "expected 0_int32 is negative but not")
+        if (allocated(error)) return
+        call check(error, is_negative(-1_int32), "expected -1_int32 is not negative but not")
+        if (allocated(error)) return
+        call check(error, is_negative(Int32_Min), "expected -2147483648_int32 is not negative but not")
+        if (allocated(error)) return
 
-        print *, "numeric integer test end"
-    end subroutine test_numeric_integer
-end program test_integer
+        ! int64
+        call check(error,.not. is_negative(1_int64), "expected 1_int64 is negative but not")
+        if (allocated(error)) return
+        call check(error,.not. is_negative(Int64_Max), "expected 9223372036854775807_int64  is negative but not")
+        if (allocated(error)) return
+        call check(error,.not. is_negative(0_int64), " expected 0_int64 is negative but not")
+        if (allocated(error)) return
+        call check(error, is_negative(-1_int64), "expected -1_int64 is not negative but not")
+        if (allocated(error)) return
+        call check(error, is_negative(Int64_Min), "expected -9223372036854775808_int64 is not negative but not")
+        if (allocated(error)) return
+    end subroutine test_is_negative
+
+    subroutine test_to_string(error)
+        type(error_type), allocatable, intent(out) :: error
+            !! error handler
+
+        call check(error, to_string(huge(0)) == "2147483647", &
+                   "expected to_string(huge(0)) return '2147483647' but got" &
+                   //to_string(huge(0)))
+        if (allocated(error)) return
+
+        call check(error, to_string(huge(0)/100, '(i10.10)') == "0021474836", &
+                   "expected to_string(huge(0)/100, '(i10.10)') return '0021474836' but got" &
+                   //to_string(huge(0)/100, '(i10.10)'))
+        if (allocated(error)) return
+
+        call check(error, to_string(-huge(0) - 1) == "-2147483648", &
+                   "expected to_string(-huge(0) - 1) return '-2147483648' but got" &
+                   //to_string(-huge(0) - 1))
+        if (allocated(error)) return
+
+        call check(error, to_string(100, 5) == "  100", &
+                   "expected to_string(100, 5) return '  100' but got" &
+                   //to_string(100, 5))
+        if (allocated(error)) return
+
+        call check(error, to_string(100, 2) == "**", &
+                   "expected to_string(100, 2) return '**' but got" &
+                   //to_string(100, 2))
+        if (allocated(error)) return
+
+        call check(error, to_string(100, digit=5, zerofill=6) == "00100", &
+                   "expected to_string(100, digit=5, zerofill=6) return '00100' but got" &
+                   //to_string(100, digit=5, zerofill=6))
+        if (allocated(error)) return
+
+        call check(error, to_string(-100, digit=5, zerofill=4) == " -0100", &
+                   "expected to_string(-100, digit=5, zerofill=4) return ' -0100' but got" &
+                   //to_string(-100, digit=5, zerofill=4))
+        if (allocated(error)) return
+
+        call check(error, to_string(-100, digit=5, zerofill=5) == "-00100", &
+                   "expected to_string(-100, digit=5, zerofill=5) return '-00100' but got" &
+                   //to_string(-100, digit=5, zerofill=5))
+        if (allocated(error)) return
+    end subroutine test_to_string
+end module test_integer
+
+program tester
+    use, intrinsic :: iso_fortran_env, only: error_unit
+    use :: testdrive, only:run_testsuite, new_testsuite, testsuite_type
+    use :: test_integer
+    implicit none
+    integer :: stat, is
+    type(testsuite_type), allocatable :: testsuites(:)
+    character(len=*), parameter :: fmt = '("#", *(1x, a))'
+
+    stat = 0
+
+    testsuites = [ &
+                 new_testsuite("nuemric_integer", collect_integer) &
+                 ]
+
+    do is = 1, size(testsuites)
+        write (error_unit, fmt) "Testing:", testsuites(is)%name
+        call run_testsuite(testsuites(is)%collect, error_unit, stat)
+    end do
+
+    if (stat > 0) then
+        write (error_unit, '(i0, 1x, a)') stat, "test(s) failed!"
+        error stop
+    end if
+end program tester

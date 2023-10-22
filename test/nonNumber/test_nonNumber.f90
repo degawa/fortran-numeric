@@ -1,210 +1,377 @@
-program test_nonNumber
+module test_nonNumber
     use, intrinsic :: iso_fortran_env
-    use :: test_check
+    use, intrinsic :: ieee_arithmetic
+    use :: testdrive, only:new_unittest, unittest_type, error_type, check
+    use :: numeric_real
+    use :: numeric_nonNumber
     implicit none
-
-    call test_numeric_nonNumber()
+    private
+    public :: collect_non_number
 
 contains
+    subroutine collect_non_number(testsuite)
+        type(unittest_type), allocatable, intent(out) :: testsuite(:)
 
-    subroutine test_numeric_nonNumber()
-        use, intrinsic :: iso_fortran_env
-        use, intrinsic :: ieee_arithmetic
-        use :: numeric_real
-        use :: numeric_integer
-        use :: numeric_nonNumber
-        implicit none
+        testsuite = [ &
+                    new_unittest("non_number parameters", test_parameters) &
+                    , new_unittest("non_number has_nan", test_has_nan) &
+                    , new_unittest("non_number is_inf", test_is_inf) &
+                    , new_unittest("non_number has_inf", test_has_inf) &
+                    , new_unittest("non_number is_non_number", test_is_non_number) &
+                    , new_unittest("non_number has_non_number", test_has_non_number) &
+                    ]
+    end subroutine collect_non_number
 
-        print *, "numeric non-number test start"
+    subroutine test_parameters(error)
+        type(error_type), allocatable, intent(out) :: error
+            !! error handler
 
-        real32_check: block
-            call check(ieee_is_nan(Real32_Quiet_NaN), "real32 Quiet Nan test")
+        call check(error, ieee_is_nan(Real32_Quiet_NaN), &
+                   "expected Real32_Quiet_NaN is NaN but not")
+        if (allocated(error)) return
 
-            call check(is_positive_inf(Real32_Positive_Inf), "real32 Positive Inf test")
+        call check(error, Real32_Positive_Inf == ieee_value(result_type_real32, ieee_positive_inf), &
+                   "expected Real32_Positive_Inf is positive infinity but not")
+        if (allocated(error)) return
 
-            call check(is_negative_inf(Real32_Negative_Inf), "real32 Negative Inf test")
+        call check(error, Real32_Negative_Inf == ieee_value(result_type_real32, ieee_negative_inf), &
+                   "expected Real32_Negative_Inf is negative infinity but not")
+        if (allocated(error)) return
 
-            call check(.not. is_positive_inf(Real32_Negative_Inf), "real32 is_positive_inf failure test")
+        call check(error, Real32_Positive_Inf /= ieee_value(result_type_real32, ieee_negative_inf), &
+                   "expected Real32_Positive_Inf is not negative infinity but not")
+        if (allocated(error)) return
 
-            call check(.not. is_negative_inf(Real32_Positive_Inf), "real32 is_negative_inf failure test")
+        call check(error, Real32_Negative_Inf /= ieee_value(result_type_real32, ieee_positive_inf), &
+                   "expected Real32_Negative_Inf is not positive infinity but not")
+        if (allocated(error)) return
 
-            call check(is_inf(Real32_Positive_Inf), "real32 is_inf test")
+        call check(error, ieee_is_nan(Real64_Quiet_NaN), &
+                   "expected Real64_Quiet_NaN is NaN but not")
+        if (allocated(error)) return
 
-            call check(is_inf(Real32_Negative_Inf), "real32 is_inf test")
+        call check(error, Real64_Positive_Inf == ieee_value(result_type_real64, ieee_positive_inf), &
+                   "expected Real64_Positive_Inf is positive infinity but not")
+        if (allocated(error)) return
 
-            call check(.not. is_inf(Real32_Quiet_NaN), "real32 is_inf failure test")
+        call check(error, Real64_Negative_Inf == ieee_value(result_type_real64, ieee_negative_inf), &
+                   "expected Real64_Negative_Inf is negative infinity but not")
+        if (allocated(error)) return
 
-        end block real32_check
+        call check(error, Real64_Positive_Inf /= ieee_value(result_type_real64, ieee_negative_inf), &
+                   "expected Real64_Positive_Inf is not negative infinity but not")
+        if (allocated(error)) return
 
-        real64_check: block
-            call check(ieee_is_nan(Real64_Quiet_NaN), "real64 Quiet Nan test")
+        call check(error, Real64_Negative_Inf /= ieee_value(result_type_real64, ieee_positive_inf), &
+                   "expected Real64_Negative_Inf is not positive infinity but not")
+        if (allocated(error)) return
+    end subroutine test_parameters
 
-            call check(is_positive_inf(Real64_Positive_Inf), "real64 Positive Inf test")
+    subroutine test_has_nan(error)
+        type(error_type), allocatable, intent(out) :: error
+            !! error handler
 
-            call check(is_negative_inf(Real64_Negative_Inf), "real64 Negative Inf test")
+        real(real32) :: r32_r1(4), r32_r2(1, 4), r32_r3(1, 1, 4)
+        real(real64) :: r64_r1(4), r64_r2(1, 4), r64_r3(1, 1, 4)
+        r32_r1(:) = 0d0
+        r32_r2(:, :) = 0d0
+        r32_r3(:, :, :) = 0d0
 
-            call check(.not. is_positive_inf(Real64_Negative_Inf), "real64 is_positive_inf failure test")
+        r32_r1(3) = Real32_Quiet_NaN
+        r32_r2(1, 3) = Real32_Quiet_NaN
+        r32_r3(1, 1, 3) = Real32_Quiet_NaN
 
-            call check(.not. is_negative_inf(Real64_Positive_Inf), "real64 is_negative_inf failure test")
+        call check(error, has_nan(r32_r1), "expected has_nan(real32_rank1) returns true but not")
+        if (allocated(error)) return
+        call check(error, has_nan(r32_r2), "expected has_nan(real32_rank2) returns true but not")
+        if (allocated(error)) return
+        call check(error, has_nan(r32_r3), "expected has_nan(real32_rank3) returns true but not")
+        if (allocated(error)) return
 
-            call check(is_inf(Real64_Positive_Inf), "real64 is_inf test")
+        r64_r1(:) = 0d0
+        r64_r2(:, :) = 0d0
+        r64_r3(:, :, :) = 0d0
 
-            call check(is_inf(Real64_Negative_Inf), "real64 is_inf test")
+        r64_r1(3) = Real64_Quiet_NaN
+        r64_r2(1, 3) = Real64_Quiet_NaN
+        r64_r3(1, 1, 3) = Real64_Quiet_NaN
 
-            call check(.not. is_inf(Real64_Quiet_NaN), "real64 is_inf failure test")
+        call check(error, has_nan(r64_r1), "expected has_nan(real64_rank1) returns true but not")
+        if (allocated(error)) return
+        call check(error, has_nan(r64_r2), "expected has_nan(real64_rank2) returns true but not")
+        if (allocated(error)) return
+        call check(error, has_nan(r64_r3), "expected has_nan(real64_rank3) returns true but not")
+        if (allocated(error)) return
+    end subroutine test_has_nan
 
-        end block real64_check
+    subroutine test_is_inf(error)
+        type(error_type), allocatable, intent(out) :: error
 
-        has_nan_check: block
-            real(real32) :: r32_r1(4), r32_r2(1, 4), r32_r3(1, 1, 4)
-            real(real64) :: r64_r1(4), r64_r2(1, 4), r64_r3(1, 1, 4)
-            r32_r1(:) = 0d0
-            r32_r2(:, :) = 0d0
-            r32_r3(:, :, :) = 0d0
+        call check(error, is_positive_inf(Real32_Positive_Inf), &
+                   "expected is_positive_inf(Real32_Positive_Inf) returns true but not")
+        if (allocated(error)) return
 
-            r32_r1(3) = Real32_Quiet_NaN
-            r32_r2(1, 3) = Real32_Quiet_NaN
-            r32_r3(1, 1, 3) = Real32_Quiet_NaN
+        call check(error, is_negative_inf(Real32_Negative_Inf), &
+                   "expected is_negative_inf(Real32_Negative_Inf) returns true but not")
+        if (allocated(error)) return
 
-            call check(has_nan(r32_r1), "has_nan real32 rank1 test")
-            call check(has_nan(r32_r2), "has_nan real32 rank2 test")
-            call check(has_nan(r32_r3), "has_nan real32 rank3 test")
+        call check(error,.not. is_positive_inf(Real32_Negative_Inf), &
+                   "expected is_positive_inf(Real32_Negative_Inf) returns false but not")
+        if (allocated(error)) return
 
-            r64_r1(:) = 0d0
-            r64_r2(:, :) = 0d0
-            r64_r3(:, :, :) = 0d0
+        call check(error,.not. is_negative_inf(Real32_Positive_Inf), &
+                   "expected is_negative_inf(Real32_Positive_Inf) returns false but not")
+        if (allocated(error)) return
 
-            r64_r1(3) = Real64_Quiet_NaN
-            r64_r2(1, 3) = Real64_Quiet_NaN
-            r64_r3(1, 1, 3) = Real64_Quiet_NaN
+        call check(error, is_inf(Real32_Positive_Inf), &
+                   "expected is_inf(Real32_Positive_Inf) returns true but not")
+        if (allocated(error)) return
 
-            call check(has_nan(r64_r1), "has_nan real64 rank1 test")
-            call check(has_nan(r64_r2), "has_nan real64 rank2 test")
-            call check(has_nan(r64_r3), "has_nan real64 rank3 test")
-        end block has_nan_check
+        call check(error, is_inf(Real32_Negative_Inf), &
+                   "expected is_inf(Real32_Negative_Inf) returns true but not")
+        if (allocated(error)) return
 
-        has_inf_check: block
-            real(real32) :: r32_p, r32_n, r32_r1(4), r32_r2(1, 4), r32_r3(1, 1, 4)
-            real(real64) :: r64_p, r64_n, r64_r1(4), r64_r2(1, 4), r64_r3(1, 1, 4)
+        call check(error,.not. is_inf(huge(result_type_real32)), &
+                   "expected is_inf(huge(0.)) returns false but not")
+        if (allocated(error)) return
 
-            r32_r1(:) = 0d0
-            r32_r2(:, :) = 0d0
-            r32_r3(:, :, :) = 0d0
+        call check(error,.not. is_inf(Real32_Quiet_NaN), &
+                   "expected is_inf(Real32_Quiet_NaN) returns false but not")
+        if (allocated(error)) return
 
-            r32_p = Real32_Positive_Inf
-            r32_n = Real32_Negative_Inf
-            call check(is_inf(r32_p), "is_inf positive inf real32 test")
-            call check(is_inf(r32_n), "is_inf negative inf real32 test")
+        call check(error, is_positive_inf(Real64_Positive_Inf), &
+                   "expected is_positive_inf(Real64_Positive_Inf) returns true but not")
+        if (allocated(error)) return
 
-            r32_r1(2) = Real32_Positive_Inf
-            call check(has_inf(r32_r1), "is_inf positive inf real32 rank1 test")
-            r32_r1(2) = Real32_Negative_Inf
-            call check(has_inf(r32_r1), "is_inf negative inf real32 rank1 test")
+        call check(error, is_negative_inf(Real64_Negative_Inf), &
+                   "expected is_negative_inf(Real64_Negative_Inf) returns true but not")
+        if (allocated(error)) return
 
-            r32_r2(1, 2) = Real32_Positive_Inf
-            call check(has_inf(r32_r2), "is_inf positive inf real32 rank2 test")
-            r32_r2(1, 2) = Real32_Negative_Inf
-            call check(has_inf(r32_r2), "is_inf negative inf real32 rank2 test")
+        call check(error,.not. is_positive_inf(Real64_Negative_Inf), &
+                   "expected is_positive_inf(Real64_Negative_Inf) returns false but not")
+        if (allocated(error)) return
 
-            r32_r3(1, 1, 2) = Real32_Positive_Inf
-            call check(has_inf(r32_r3), "is_inf positive inf real32 rank3 test")
-            r32_r3(1, 1, 2) = Real32_Negative_Inf
-            call check(has_inf(r32_r3), "is_inf negative inf real32 rank3 test")
+        call check(error,.not. is_negative_inf(Real64_Positive_Inf), &
+                   "expected is_negative_inf(Real64_Positive_Inf) returns false but not")
+        if (allocated(error)) return
 
-            r64_r1(:) = 0d0
-            r64_r2(:, :) = 0d0
-            r64_r3(:, :, :) = 0d0
+        call check(error, is_inf(Real64_Positive_Inf), &
+                   "expected is_inf(Real64_Positive_Inf) returns true but not")
+        if (allocated(error)) return
 
-            r64_p = Real64_Positive_Inf
-            r64_n = Real64_Negative_Inf
-            call check(is_inf(r64_p), "is_inf positive inf real64 test")
-            call check(is_inf(r64_n), "is_inf negative inf real64 test")
+        call check(error, is_inf(Real64_Negative_Inf), &
+                   "expected is_inf(Real64_Negative_Inf) returns true but not")
+        if (allocated(error)) return
 
-            r64_r1(2) = Real64_Positive_Inf
-            call check(has_inf(r64_r1), "is_inf positive inf real64 rank1 test")
-            r64_r1(2) = Real64_Negative_Inf
-            call check(has_inf(r64_r1), "is_inf negative inf real64 rank1 test")
+        call check(error,.not. is_inf(huge(result_type_real64)), &
+                   "expected is_inf(huge(0.)) returns false but not")
+        if (allocated(error)) return
 
-            r64_r2(1, 2) = Real64_Positive_Inf
-            call check(has_inf(r64_r2), "is_inf positive inf real64 rank2 test")
-            r64_r2(1, 2) = Real64_Negative_Inf
-            call check(has_inf(r64_r2), "is_inf negative inf real64 rank2 test")
+        call check(error,.not. is_inf(Real64_Quiet_NaN), &
+                   "expected is_inf(Real64_Quiet_NaN) returns false but not")
+        if (allocated(error)) return
+    end subroutine test_is_inf
 
-            r64_r3(1, 1, 2) = Real64_Positive_Inf
-            call check(has_inf(r64_r3), "is_inf positive inf real64 rank3 test")
-            r64_r3(1, 1, 2) = Real64_Negative_Inf
-            call check(has_inf(r64_r3), "is_inf negative inf real64 rank3 test")
-        end block has_inf_check
+    subroutine test_has_inf(error)
+        type(error_type), allocatable, intent(out) :: error
 
-        has_non_number_check: block
-            real(real32) :: r32, r32_r1(4), r32_r2(1, 4), r32_r3(1, 1, 4)
-            real(real64) :: r64, r64_r1(4), r64_r2(1, 4), r64_r3(1, 1, 4)
+        real(real32) :: r32_r1(4), r32_r2(1, 4), r32_r3(1, 1, 4)
+        real(real64) :: r64_r1(4), r64_r2(1, 4), r64_r3(1, 1, 4)
 
-            r32_r1(:) = 0d0
-            r32_r2(:, :) = 0d0
-            r32_r3(:, :, :) = 0d0
+        r32_r1(:) = 0d0
+        r32_r2(:, :) = 0d0
+        r32_r3(:, :, :) = 0d0
 
-            r32 = Real32_Quiet_NaN
-            call check(is_non_number(r32), "is_non_number nan real32 test")
-            r32 = Real32_Positive_Inf
-            call check(is_non_number(r32), "is_non_number positive inf real32 test")
-            r32 = Real32_Negative_Inf
-            call check(is_non_number(r32), "is_non_number negative inf real32 test")
+        r32_r1(2) = Real32_Positive_Inf
+        call check(error, has_inf(r32_r1), "expected has_inf(real32_rank1) contained positive inf returns true but not")
+        if (allocated(error)) return
+        r32_r1(2) = Real32_Negative_Inf
+        call check(error, has_inf(r32_r1), "expected has_inf(real32_rank1) contained negative inf returns true but not")
+        if (allocated(error)) return
 
-            r32_r1(2) = Real32_Quiet_NaN
-            call check(has_non_number(r32_r1), "has_non_number nan real32 rank1 test")
-            r32_r1(2) = Real32_Positive_Inf
-            call check(has_non_number(r32_r1), "has_non_number posivite inf real32 rank1 test")
-            r32_r1(2) = Real32_Negative_Inf
-            call check(has_non_number(r32_r1), "has_non_number negative inf real32 rank1 test")
+        r32_r2(1, 2) = Real32_Positive_Inf
+        call check(error, has_inf(r32_r2), "expected has_inf(real32_rank2) contained positive inf returns true but not")
+        if (allocated(error)) return
+        r32_r2(1, 2) = Real32_Negative_Inf
+        call check(error, has_inf(r32_r2), "expected has_inf(real32_rank2) contained negative inf returns true but not")
+        if (allocated(error)) return
 
-            r32_r2(1, 2) = Real32_Quiet_NaN
-            call check(has_non_number(r32_r2), "has_non_number nan real32 rank2 test")
-            r32_r2(1, 2) = Real32_Positive_Inf
-            call check(has_non_number(r32_r2), "has_non_number posivite inf real32 rank2 test")
-            r32_r2(1, 2) = Real32_Negative_Inf
-            call check(has_non_number(r32_r2), "has_non_number negative inf real32 rank2 test")
+        r32_r3(1, 1, 2) = Real32_Positive_Inf
+        call check(error, has_inf(r32_r3), "expected has_inf(real32_rank3) contained positive inf returns true but not")
+        if (allocated(error)) return
+        r32_r3(1, 1, 2) = Real32_Negative_Inf
+        call check(error, has_inf(r32_r3), "expected has_inf(real32_rank3) contained negative inf returns true but not")
+        if (allocated(error)) return
 
-            r32_r3(1, 1, 2) = Real32_Quiet_NaN
-            call check(has_non_number(r32_r3), "has_non_number nan real32 rank3 test")
-            r32_r3(1, 1, 2) = Real32_Positive_Inf
-            call check(has_non_number(r32_r3), "has_non_number posivite inf real32 rank3 test")
-            r32_r3(1, 1, 2) = Real32_Negative_Inf
-            call check(has_non_number(r32_r3), "has_non_number negative inf real32 rank3 test")
+        r64_r1(:) = 0d0
+        r64_r2(:, :) = 0d0
+        r64_r3(:, :, :) = 0d0
 
-            r64_r1(:) = 0d0
-            r64_r2(:, :) = 0d0
-            r64_r3(:, :, :) = 0d0
+        r64_r1(2) = Real64_Positive_Inf
+        call check(error, has_inf(r64_r1), "expected has_inf(real64_rank1) contained positive inf returns true but not")
+        if (allocated(error)) return
+        r64_r1(2) = Real64_Negative_Inf
+        call check(error, has_inf(r64_r1), "expected has_inf(real64_rank1) contained negative inf returns true but not")
+        if (allocated(error)) return
 
-            r64 = Real64_Quiet_NaN
-            call check(is_non_number(r64), "is_non_number nan real64 test")
-            r64 = Real64_Positive_Inf
-            call check(is_non_number(r64), "is_non_number positive inf real64 test")
-            r64 = Real64_Negative_Inf
-            call check(is_non_number(r64), "is_non_number negative inf real64 test")
+        r64_r2(1, 2) = Real64_Positive_Inf
+        call check(error, has_inf(r64_r2), "expected has_inf(real64_rank2) contained positive inf returns true but not")
+        if (allocated(error)) return
+        r64_r2(1, 2) = Real64_Negative_Inf
+        call check(error, has_inf(r64_r2), "expected has_inf(real64_rank2) contained negative inf returns true but not")
+        if (allocated(error)) return
 
-            r64_r1(2) = Real64_Quiet_NaN
-            call check(has_non_number(r64_r1), "has_non_number nan real64 rank1 test")
-            r64_r1(2) = Real64_Positive_Inf
-            call check(has_non_number(r64_r1), "has_non_number posivite inf real64 rank1 test")
-            r64_r1(2) = Real64_Negative_Inf
-            call check(has_non_number(r64_r1), "has_non_number negative inf real64 rank1 test")
+        r64_r3(1, 1, 2) = Real64_Positive_Inf
+        call check(error, has_inf(r64_r3), "expected has_inf(real64_rank3) contained positive inf returns true but not")
+        if (allocated(error)) return
+        r64_r3(1, 1, 2) = Real64_Negative_Inf
+        call check(error, has_inf(r64_r3), "expected has_inf(real64_rank3) contained negative inf returns true but not")
+        if (allocated(error)) return
+    end subroutine test_has_inf
 
-            r64_r2(1, 2) = Real64_Quiet_NaN
-            call check(has_non_number(r64_r2), "has_non_number nan real64 rank2 test")
-            r64_r2(1, 2) = Real64_Positive_Inf
-            call check(has_non_number(r64_r2), "has_non_number posivite inf real64 rank2 test")
-            r64_r2(1, 2) = Real64_Negative_Inf
-            call check(has_non_number(r64_r2), "has_non_number negative inf real64 rank2 test")
+    subroutine test_is_non_number(error)
+        type(error_type), allocatable, intent(out) :: error
 
-            r64_r3(1, 1, 2) = Real64_Quiet_NaN
-            call check(has_non_number(r64_r3), "has_non_number nan real64 rank3 test")
-            r64_r3(1, 1, 2) = Real64_Positive_Inf
-            call check(has_non_number(r64_r3), "has_non_number posivite inf real64 rank3 test")
-            r64_r3(1, 1, 2) = Real64_Negative_Inf
-            call check(has_non_number(r64_r3), "has_non_number negative inf real64 rank3 test")
-        end block has_non_number_check
+        real(real32) :: r32
+        real(real64) :: r64
 
-        print *, "numeric non-number test end"
-    end subroutine test_numeric_nonNumber
-end program test_nonNumber
+        r32 = Real32_Quiet_NaN
+        call check(error, is_non_number(r32), "expected is_non_number(Real32_Quiet_NaN) returns true but not")
+        if (allocated(error)) return
+        r32 = Real32_Positive_Inf
+        call check(error, is_non_number(r32), "expected is_non_number(Real32_Positive_Inf) returns true but not")
+        if (allocated(error)) return
+        r32 = Real32_Negative_Inf
+        call check(error, is_non_number(r32), "expected is_non_number(Real32_Negative_Inf) returns true but not")
+        if (allocated(error)) return
+
+        r64 = Real64_Quiet_NaN
+        call check(error, is_non_number(r64), "expected is_non_number(Real64_Quiet_NaN) returns true but not")
+        if (allocated(error)) return
+        r64 = Real64_Positive_Inf
+        call check(error, is_non_number(r64), "expected is_non_number(Real64_Positive_Inf) returns true but not")
+        if (allocated(error)) return
+        r64 = Real64_Negative_Inf
+        call check(error, is_non_number(r64), "expected is_non_number(Real64_Negative_Inf) returns true but not")
+        if (allocated(error)) return
+    end subroutine test_is_non_number
+
+    subroutine test_has_non_number(error)
+        type(error_type), allocatable, intent(out) :: error
+
+        real(real32) :: r32_r1(4), r32_r2(1, 4), r32_r3(1, 1, 4)
+        real(real64) :: r64_r1(4), r64_r2(1, 4), r64_r3(1, 1, 4)
+
+        r32_r1(:) = 0d0
+        r32_r2(:, :) = 0d0
+        r32_r3(:, :, :) = 0d0
+
+        r32_r1(2) = Real32_Quiet_NaN
+        call check(error, has_non_number(r32_r1), &
+                   "expected has_non_number(real32_rank1) contained nan returns true but not")
+        if (allocated(error)) return
+        r32_r1(2) = Real32_Positive_Inf
+        call check(error, has_non_number(r32_r1), &
+                   "expected has_non_number(real32_rank1) contained positive inf returns true but not")
+        if (allocated(error)) return
+        r32_r1(2) = Real32_Negative_Inf
+        call check(error, has_non_number(r32_r1), &
+                   "expected has_non_number(real32_rank1) contained negative inf returns true but not")
+        if (allocated(error)) return
+
+        r32_r2(1, 2) = Real32_Quiet_NaN
+        call check(error, has_non_number(r32_r2), &
+                   "expected has_non_number(real32_rank2) contained nan returns true but not")
+        if (allocated(error)) return
+        r32_r2(1, 2) = Real32_Positive_Inf
+        call check(error, has_non_number(r32_r2), &
+                   "expected has_non_number(real32_rank2) contained positive inf returns true but not")
+        if (allocated(error)) return
+        r32_r2(1, 2) = Real32_Negative_Inf
+        call check(error, has_non_number(r32_r2), &
+                   "expected has_non_number(real32_rank2) contained negative inf returns true but not")
+        if (allocated(error)) return
+
+        r32_r3(1, 1, 2) = Real32_Quiet_NaN
+        call check(error, has_non_number(r32_r3), &
+                   "expected has_non_number(real32_rank3) contained nan returns true but not")
+        if (allocated(error)) return
+        r32_r3(1, 1, 2) = Real32_Positive_Inf
+        call check(error, has_non_number(r32_r3), &
+                   "expected has_non_number(real32_rank3) contained positive inf returns true but not")
+        if (allocated(error)) return
+        r32_r3(1, 1, 2) = Real32_Negative_Inf
+        call check(error, has_non_number(r32_r3), &
+                   "expected has_non_number(real32_rank3) contained negative inf returns true but not")
+        if (allocated(error)) return
+
+        r64_r1(:) = 0d0
+        r64_r2(:, :) = 0d0
+        r64_r3(:, :, :) = 0d0
+
+        r64_r1(2) = Real64_Quiet_NaN
+        call check(error, has_non_number(r64_r1), &
+                   "expected has_non_number(real64_rank1) contained nan returns true but not")
+        if (allocated(error)) return
+        r64_r1(2) = Real64_Positive_Inf
+        call check(error, has_non_number(r64_r1), &
+                   "expected has_non_number(real64_rank1) contained positive inf returns true but not")
+        if (allocated(error)) return
+        r64_r1(2) = Real64_Negative_Inf
+        call check(error, has_non_number(r64_r1), &
+                   "expected has_non_number(real64_rank1) contained negative inf returns true but not")
+        if (allocated(error)) return
+
+        r64_r2(1, 2) = Real64_Quiet_NaN
+        call check(error, has_non_number(r64_r2), &
+                   "expected has_non_number(real64_rank2) contained nan returns true but not")
+        if (allocated(error)) return
+        r64_r2(1, 2) = Real64_Positive_Inf
+        call check(error, has_non_number(r64_r2), &
+                   "expected has_non_number(real64_rank2) contained positive inf returns true but not")
+        if (allocated(error)) return
+        r64_r2(1, 2) = Real64_Negative_Inf
+        call check(error, has_non_number(r64_r2), &
+                   "expected has_non_number(real64_rank2) contained negative inf returns true but not")
+        if (allocated(error)) return
+
+        r64_r3(1, 1, 2) = Real64_Quiet_NaN
+        call check(error, has_non_number(r64_r3), &
+                   "expected has_non_number(real64_rank3) contained nan returns true but not")
+        if (allocated(error)) return
+        r64_r3(1, 1, 2) = Real64_Positive_Inf
+        call check(error, has_non_number(r64_r3), &
+                   "expected has_non_number(real64_rank3) contained positive inf returns true but not")
+        if (allocated(error)) return
+        r64_r3(1, 1, 2) = Real64_Negative_Inf
+        call check(error, has_non_number(r64_r3), &
+                   "expected has_non_number(real64_rank3) contained negative inf returns true but not")
+        if (allocated(error)) return
+    end subroutine test_has_non_number
+end module test_nonNumber
+
+program tester
+    use, intrinsic :: iso_fortran_env, only: error_unit
+    use :: testdrive, only:run_testsuite, new_testsuite, testsuite_type
+    use :: test_nonNumber
+    implicit none
+    integer :: stat, is
+    type(testsuite_type), allocatable :: testsuites(:)
+    character(len=*), parameter :: fmt = '("#", *(1x, a))'
+
+    stat = 0
+
+    testsuites = [ &
+                 new_testsuite("nuemric_nonNumber", collect_non_number) &
+                 ]
+
+    do is = 1, size(testsuites)
+        write (error_unit, fmt) "Testing:", testsuites(is)%name
+        call run_testsuite(testsuites(is)%collect, error_unit, stat)
+    end do
+
+    if (stat > 0) then
+        write (error_unit, '(i0, 1x, a)') stat, "test(s) failed!"
+        error stop
+    end if
+end program tester
