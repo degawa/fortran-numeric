@@ -1,3 +1,6 @@
+set(LIBNAME ${PROJECT_NAME})
+set(MOD_OUTPUT_DIR ${CMAKE_CURRENT_BINARY_DIR}/mod)
+
 add_library(check STATIC)
 target_sources(check
     PRIVATE
@@ -23,8 +26,8 @@ function(ADDTEST name)
     )
 
     add_test(NAME ${name}
-             COMMAND $<TARGET_FILE:test_${name}> ${CMAKE_CURRENT_BINARY_DIR}
-             WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+        COMMAND $<TARGET_FILE:test_${name}> ${CMAKE_CURRENT_BINARY_DIR}
+        WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
     )
 endfunction(ADDTEST)
 
