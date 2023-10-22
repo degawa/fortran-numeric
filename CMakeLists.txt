@@ -20,9 +20,15 @@ include(GNUInstallDirs)
 # --- CMake specific configuration and package data export
 add_subdirectory(config)
 
-enable_testing()
-
 add_subdirectory(src)
+
+# enable build testing
+include(CTest)
+
+if(BUILD_TESTING)
+    enable_testing()
+    add_subdirectory(test)
+endif()
 
 install(EXPORT ${PROJECT_NAME}-targets
     NAMESPACE ${PROJECT_NAME}::
