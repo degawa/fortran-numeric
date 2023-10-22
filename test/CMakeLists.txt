@@ -5,17 +5,6 @@ if(NOT TARGET "test-drive::test-drive")
     find_package("test-drive" REQUIRED)
 endif()
 
-add_library(check STATIC)
-target_sources(check
-    PRIVATE
-    check.f90
-)
-
-set_target_properties(check
-    PROPERTIES
-    Fortran_MODULE_DIRECTORY ${MOD_OUTPUT_DIR}
-)
-
 function(ADDTEST name)
     add_executable(test_${name} test_${name}.f90)
 
