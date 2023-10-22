@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.15)
 
 enable_language(Fortran)
 
-project(fortran-numeric Fortran)
+project(fortran-numeric LANGUAGES Fortran)
 
 enable_testing()
 
