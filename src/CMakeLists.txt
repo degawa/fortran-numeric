@@ -8,6 +8,7 @@ set(FYPP_SRCS
 )
 
 set(F90_SRCS)
+
 foreach(SRC IN LISTS FYPP_SRCS)
     add_custom_command(
         OUTPUT ${CMAKE_CURRENT_SOURCE_DIR}/${SRC}/${SRC}.f90
@@ -16,20 +17,31 @@ foreach(SRC IN LISTS FYPP_SRCS)
     )
 endforeach()
 
-add_library(${LIBNAME} STATIC)
-target_sources(${LIBNAME}
-    PUBLIC
+add_library(${LIBNAME}
     integer/integer.f90
     real/real.f90
     nonNumber/nonNumber.f90
 )
 
+add_library(${LIBNAME} ${SRC})
+
+set(MOD_OUTPUT_DIR ${CMAKE_CURRENT_BINARY_DIR}/mod)
+
 set_target_properties(${LIBNAME}
     PROPERTIES
-    ARCHIVE_OUTPUT_DIRECTORY ${LIB_OUTPUT_DIR}
-    LIBRARY_OUTPUT_DIRECTORY ${LIB_OUTPUT_DIR}
+    POSITION_INDEPENDENT_CODE ON
+    WINDOWS_EXPORT_ALL_SYMBOLS ON
     Fortran_MODULE_DIRECTORY ${MOD_OUTPUT_DIR}
 )
 
+target_include_directories(${LIBNAME} PUBLIC
+    $<BUILD_INTERFACE:${MOD_OUTPUT_DIR}>
+    $<INSTALL_INTERFACE:${CMAKE_INSTALL_MODULEDIR}>
+)
 
-# add_subdirectory(tests)
+install(TARGETS ${LIBNAME}
+    EXPORT ${LIBNAME}-targets
+    ARCHIVE DESTINATION "${CMAKE_INSTALL_LIBDIR}"
+    LIBRARY DESTINATION "${CMAKE_INSTALL_LIBDIR}"
+)
+install(DIRECTORY ${MOD_OUTPUT_DIR} DESTINATION "${CMAKE_INSTALL_MODULEDIR}")

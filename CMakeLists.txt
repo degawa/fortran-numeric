@@ -4,16 +4,23 @@ enable_language(Fortran)
 
 project(fortran-numeric LANGUAGES Fortran)
 
+# Read version from file
+file(STRINGS "${PROJECT_SOURCE_DIR}/VERSION" PROJECT_VERSION)
+string(REPLACE "." ";" VERSION_LIST ${PROJECT_VERSION})
+list(GET VERSION_LIST 0 PROJECT_VERSION_MAJOR)
+list(GET VERSION_LIST 1 PROJECT_VERSION_MINOR)
+list(GET VERSION_LIST 2 PROJECT_VERSION_PATCH)
+unset(VERSION_LIST)
+
 set(CMAKE_USER_MAKE_RULES_OVERRIDE ${CMAKE_CURRENT_SOURCE_DIR}/config/DefaultFlags.cmake)
 
+# Follow GNU conventions for installation directories
+include(GNUInstallDirs)
+
+# --- CMake specific configuration and package data export
+add_subdirectory(config)
+
 enable_testing()
-
-# ディレクトリ設定
-set(MOD_OUTPUT_DIR ${PROJECT_BINARY_DIR}/mod)
-set(LIB_OUTPUT_DIR ${PROJECT_BINARY_DIR}/lib)
-
-message("module  file output dir: ${MOD_OUTPUT_DIR}")
-message("library file output dir: ${LIB_OUTPUT_DIR}")
 
 find_program(FYPP fypp)
 if(NOT FYPP)
@@ -21,3 +28,8 @@ if(NOT FYPP)
 endif()
 
 add_subdirectory(src)
+
+install(EXPORT ${PROJECT_NAME}-targets
+    NAMESPACE ${PROJECT_NAME}::
+    DESTINATION "${CMAKE_INSTALL_LIBDIR}/cmake/${PROJECT_NAME}"
+)
