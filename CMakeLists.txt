@@ -20,16 +20,23 @@ include(GNUInstallDirs)
 # --- CMake specific configuration and package data export
 add_subdirectory(config)
 
-enable_testing()
-
 find_program(FYPP fypp)
+
 if(NOT FYPP)
   message(FATAL_ERROR "fypp not found")
 endif()
 
 add_subdirectory(src)
 
+# enable build testing
+include(CTest)
+
+if(BUILD_TESTING)
+  enable_testing()
+  add_subdirectory(test)
+endif()
+
 install(EXPORT ${PROJECT_NAME}-targets
-    NAMESPACE ${PROJECT_NAME}::
-    DESTINATION "${CMAKE_INSTALL_LIBDIR}/cmake/${PROJECT_NAME}"
+  NAMESPACE ${PROJECT_NAME}::
+  DESTINATION "${CMAKE_INSTALL_LIBDIR}/cmake/${PROJECT_NAME}"
 )
