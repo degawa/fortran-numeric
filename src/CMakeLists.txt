@@ -1,25 +1,17 @@
 set(LIBNAME ${PROJECT_NAME})
 
+include(${PROJECT_SOURCE_DIR}/cmake/numeric.cmake)
+
 # generating source files using fypp
 set(FYPP_SRCS
-    integer
-    real
-    nonNumber
+    integer/integer.fy90
+    real/real.fy90
+    nonNumber/nonNumber.fy90
 )
 
-foreach(SRC IN LISTS FYPP_SRCS)
-    add_custom_command(
-        OUTPUT ${CMAKE_CURRENT_SOURCE_DIR}/${SRC}/${SRC}.f90
-        COMMAND fypp ${CMAKE_CURRENT_SOURCE_DIR}/${SRC}/${SRC}.fy90 ${CMAKE_CURRENT_SOURCE_DIR}/${SRC}/${SRC}.f90
-        MAIN_DEPENDENCY ${CMAKE_CURRENT_SOURCE_DIR}/${SRC}/${SRC}.fy90
-    )
-endforeach()
+fypp_f90("${FYPP_FLAGS}" "${FYPP_SRCS}" F90_SCRS)
 
-add_library(${LIBNAME}
-    integer/integer.f90
-    real/real.f90
-    nonNumber/nonNumber.f90
-)
+add_library(${LIBNAME} ${F90_SCRS})
 
 set(MOD_OUTPUT_DIR ${CMAKE_CURRENT_BINARY_DIR}/mod)
 
