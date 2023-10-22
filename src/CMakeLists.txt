@@ -7,8 +7,6 @@ set(FYPP_SRCS
     nonNumber
 )
 
-set(F90_SRCS)
-
 foreach(SRC IN LISTS FYPP_SRCS)
     add_custom_command(
         OUTPUT ${CMAKE_CURRENT_SOURCE_DIR}/${SRC}/${SRC}.f90
@@ -22,8 +20,6 @@ add_library(${LIBNAME}
     real/real.f90
     nonNumber/nonNumber.f90
 )
-
-add_library(${LIBNAME} ${SRC})
 
 set(MOD_OUTPUT_DIR ${CMAKE_CURRENT_BINARY_DIR}/mod)
 
