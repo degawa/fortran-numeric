@@ -3,8 +3,25 @@ version = "0.1.0"
 license = "MIT"
 author = "Tomohiro Degawa"
 maintainer = "degawa.tomohiro@gmail.com"
-copyright = "2021 Tomohiro Degawa"
+copyright = "2021-2023 Tomohiro Degawa"
 description = "A library handling integer, floating-point number, and non-number in modern Fortran"
 
-[library]
-source-dir="src"
+[build]
+auto-executables = false
+auto-tests = true
+auto-examples = true
+module-naming = false
+
+[install]
+library = true
+
+[fortran]
+implicit-typing = false
+implicit-external = false
+source-form = "free"
+
+[preprocess]
+[preprocess.cpp]
+
+[dev-dependencies]
+test-drive = { git="https://github.com/fortran-lang/test-drive" }
