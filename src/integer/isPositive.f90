@@ -19,7 +19,7 @@ module numeric_integer_isPositive
 contains
     !>Returns `.true.` if the 1-byte integer is positive, including 0,
     !>and returns `.false.` otherwise.
-    pure logical function is_positive_int8(i8)
+    pure elemental logical function is_positive_int8(i8)
         implicit none
         integer(int8), intent(in) :: i8
             !! 1-byte integer
@@ -33,7 +33,7 @@ contains
 
     !>Returns `.true.` if the 2-byte integer is positive, including 0,
     !>and returns `.false.` otherwise.
-    pure logical function is_positive_int16(i16)
+    pure elemental logical function is_positive_int16(i16)
         implicit none
         integer(int16), intent(in) :: i16
             !! 2-byte integer
@@ -47,7 +47,7 @@ contains
 
     !>Returns `.true.` if the 4-byte integer is positive, including 0,
     !>and returns `.false.` otherwise.
-    pure logical function is_positive_int32(i32)
+    pure elemental logical function is_positive_int32(i32)
         implicit none
         integer(int32), intent(in) :: i32
             !! 4-byte integer
@@ -61,7 +61,7 @@ contains
 
     !>Returns `.true.` if the 8-byte integer is positive, including 0,
     !>and returns `.false.` otherwise.
-    pure logical function is_positive_int64(i64)
+    pure elemental logical function is_positive_int64(i64)
         implicit none
         integer(int64), intent(in) :: i64
             !! 8-byte integer
