@@ -29,8 +29,15 @@ module numeric_integer
     public :: Int64_Min
 
     ! functions
-    public :: get_digit
     public :: to_string
     public :: is_positive
     public :: is_negative
+    public :: count_binary_digits
+    public :: count_octal_digits
+    public :: count_decimal_digits
+    public :: count_hexadecimal_digits
+    public :: count_digits
+
+    ! obsolate
+    public :: get_digit
 end module numeric_integer
