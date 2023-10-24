@@ -10,6 +10,7 @@ module numeric_integer_countDigits
     public :: count_binary_digits
     public :: count_octal_digits
     public :: count_decimal_digits
+    public :: count_hexadecimal_digits
     public :: count_digits
 
     !>Returns a number of digits of an integer.
@@ -44,6 +45,14 @@ module numeric_integer_countDigits
         procedure :: count_decimal_digits_i64
     end interface
 
+    !>Returns a number of digits in hexadecimal representation of an integer.
+    interface count_hexadecimal_digits
+        procedure :: count_hexadecimal_digits_i8
+        procedure :: count_hexadecimal_digits_i16
+        procedure :: count_hexadecimal_digits_i32
+        procedure :: count_hexadecimal_digits_i64
+    end interface
+
     !>Returns a number of digits in decimal representation of an integer.
     interface count_digits
         procedure :: count_decimal_digits_i8
@@ -56,6 +65,8 @@ module numeric_integer_countDigits
         !! number of bits required to represent a binary digit
     integer(int32), private, parameter :: bit_size_octal_digit = 3
         !! number of bits required to represent an octal digit
+    integer(int32), private, parameter :: bit_size_hexadecimal_digit = 4
+        !! number of bits required to represent a hexadecimal digit
 contains
     !>Returns the number of digits of 1-byte integer.
     pure function get_digit_int8(i8) result(digits)
@@ -441,4 +452,112 @@ contains
             digits = digits + 1
         end do
     end function count_decimal_digits_i64
+
+    !>Returns the number of digits in hexadecimal representaion of 1-byte integer.
+    pure elemental function count_hexadecimal_digits_i8(i8) result(digits)
+        implicit none
+        integer(int8), intent(in) :: i8
+            !! 1-byte integer
+        integer(int32) :: digits
+            !! A number of digits in hexadecimal representaion of `i8`
+
+        integer(int8), parameter :: base = 16_int8
+        integer(int8) :: i
+
+        if (i8 < 0) then
+            ! 1111 1111
+            ! ^--^ ^--^
+            !   2    1
+            digits = bit_size(i8)/bit_size_hexadecimal_digit
+            return
+        end if
+
+        i = i8
+        digits = 1
+        do while (i > 16_int8)
+            i = i/16_int8
+            digits = digits + 1
+        end do
+    end function count_hexadecimal_digits_i8
+
+    !>Returns the number of digits in hexadecimal representaion of 2-byte integer.
+    pure elemental function count_hexadecimal_digits_i16(i16) result(digits)
+        implicit none
+        integer(int16), intent(in) :: i16
+            !! 2-byte integer
+        integer(int32) :: digits
+            !! A number of digits in hexadecimal representaion of `i16`
+
+        integer(int16), parameter :: base = 16_int16
+        integer(int16) :: i
+
+        if (i16 < 0) then
+            ! 1111 1111 1111 1111
+            ! ^--^ ^--^ ^--^ ^--^
+            !   4    3    2    1
+            digits = bit_size(i16)/bit_size_hexadecimal_digit
+            return
+        end if
+
+        i = i16
+        digits = 1
+        do while (i >= base)
+            i = i/base
+            digits = digits + 1
+        end do
+    end function count_hexadecimal_digits_i16
+
+    !>Returns the number of digits in hexadecimal representaion of 4-byte integer.
+    pure elemental function count_hexadecimal_digits_i32(i32) result(digits)
+        implicit none
+        integer(int32), intent(in) :: i32
+            !! 4-byte integer
+        integer(int32) :: digits
+            !! A number of digits in hexadecimal representaion of `i32`
+
+        integer(int32), parameter :: base = 16_int32
+        integer(int32) :: i
+
+        if (i32 < 0) then
+            ! 1111 1111 1111 1111 1111 1111 1111 1111
+            ! ^--^ ^--^ ^--^ ^--^ ^--^ ^--^ ^--^ ^--^
+            !   8    7    6    5    4    3    2    1
+            digits = bit_size(i32)/bit_size_hexadecimal_digit
+            return
+        end if
+
+        i = i32
+        digits = 1
+        do while (i >= base)
+            i = i/base
+            digits = digits + 1
+        end do
+    end function count_hexadecimal_digits_i32
+
+    !>Returns the number of digits in hexadecimal representaion of 8-byte integer.
+    pure elemental function count_hexadecimal_digits_i64(i64) result(digits)
+        implicit none
+        integer(int64), intent(in) :: i64
+            !! 8-byte integer
+        integer(int32) :: digits
+            !! A number of digits in hexadecimal representaion of `i64`
+
+        integer(int64), parameter :: base = 16_int64
+        integer(int64) :: i
+
+        if (i64 < 0) then
+            ! 1111 1111 1111 1111 1111 1111 1111 1111 1111 1111 1111 1111 1111 1111 1111 1111
+            ! ^--^ ^--^ ^--^ ^--^ ^--^ ^--^ ^--^ ^--^ ^--^ ^--^ ^--^ ^--^ ^--^ ^--^ ^--^ ^--^
+            !  16   15   14   13   12   11   10    9    8    7    6    5    4    3    2    1
+            digits = bit_size(i64)/bit_size_hexadecimal_digit
+            return
+        end if
+
+        i = i64
+        digits = 1
+        do while (i >= base)
+            i = i/base
+            digits = digits + 1
+        end do
+    end function count_hexadecimal_digits_i64
 end module numeric_integer_countDigits
