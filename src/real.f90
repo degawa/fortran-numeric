@@ -11,6 +11,7 @@ module numeric_real
     use, intrinsic :: iso_fortran_env
     use :: numeric_real_parameter
     use :: numeric_real_toString
+    use :: numeric_real_countIntegerDigits
     implicit none
     private
     ! parameters
@@ -29,4 +30,5 @@ module numeric_real
 
     ! functions
     public :: to_string
+    public :: count_integer_digits
 end module numeric_real
