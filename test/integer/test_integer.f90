@@ -15,6 +15,7 @@ contains
                     , new_unittest("integer is_positive()", test_is_positive) &
                     , new_unittest("integer is_negative()", test_is_negative) &
                     , new_unittest("integer to_string()", test_to_string) &
+                    , new_unittest("integer count_digits()", test_count_digits) &
                     ]
     end subroutine collect_integer
 
@@ -245,6 +246,179 @@ contains
                    //to_string(-100, digit=5, zerofill=5))
         if (allocated(error)) return
     end subroutine test_to_string
+
+    subroutine test_count_digits(error)
+        type(error_type), allocatable, intent(out) :: error
+            !! error handler
+
+        integer(int8), allocatable :: input_int8(:)
+        integer(int16), allocatable :: input_int16(:)
+        integer(int32), allocatable :: input_int32(:)
+        integer(int64), allocatable :: input_int64(:)
+        integer(int32), allocatable :: expected(:)
+        integer(int32) :: test_num
+        character(256) :: buffer
+
+        ! int8
+        input_int8 = [integer(int8) :: 0, &
+                      1, 9, 10, 99, 100, Int8_Max, &
+                      -1, -9, -10, -99, -100, Int8_Min]
+        expected = [1, &
+                    1, 1, 2, 2, 3, 3, &
+                    1, 1, 2, 2, 3, 3]
+        do test_num = 1, size(input_int8)
+            write (buffer, '(A,I0,A,I0,A,I0)') &
+                "expected digits of ", input_int8(test_num), &
+                "_int8 is ", expected(test_num), &
+                " but got ", count_digits(input_int8(test_num))
+            call check(error, count_digits(input_int8(test_num)), expected(test_num), trim(buffer))
+            if (allocated(error)) return
+        end do
+
+        ! int16
+        input_int16 = [integer(int16) :: 0, &
+                       1, 9, 10, 99, 100, 999, 1000, 9999, 10000, Int16_Max, &
+                       -1, -9, -10, -99, -100, -999, -1000, -9999, -10000, Int16_Min]
+        expected = [1, &
+                    1, 1, 2, 2, 3, 3, 4, 4, 5, 5, &
+                    1, 1, 2, 2, 3, 3, 4, 4, 5, 5]
+        do test_num = 1, size(input_int16)
+            write (buffer, '(A,I0,A,I0,A,I0)') &
+                "expected digits of ", input_int16(test_num), &
+                "_int16 is ", expected(test_num), &
+                " but got ", count_digits(input_int16(test_num))
+            call check(error, count_digits(input_int16(test_num)), expected(test_num), trim(buffer))
+            if (allocated(error)) return
+        end do
+
+        ! int32
+        input_int32 = [integer(int32) :: 0, &
+                       1, 9, 10, 99, 100, 999, 1000, 9999, 10000, 99999, 100000, 999999, 1000000, &
+                       9999999, 10000000, 99999999, 100000000, 999999999, 1000000000, Int32_Max, &
+                       -1, -9, -10, -99, -100, -999, -1000, -9999, -10000, -99999, -100000, -999999, -1000000, &
+                       -9999999, -10000000, -99999999, -100000000, -999999999, -1000000000, Int32_Min]
+        expected = [1, &
+                    1, 1, 2, 2, 3, 3, 4, 4, 5, 5, 6, 6, 7, 7, 8, 8, 9, 9, 10, 10, &
+                    1, 1, 2, 2, 3, 3, 4, 4, 5, 5, 6, 6, 7, 7, 8, 8, 9, 9, 10, 10]
+        do test_num = 1, size(input_int32)
+            write (buffer, '(A,I0,A,I0,A,I0)') &
+                "expected digits of ", input_int32(test_num), &
+                "_int32 is ", expected(test_num), &
+                " but got ", count_digits(input_int32(test_num))
+            call check(error, count_digits(input_int32(test_num)), expected(test_num), trim(buffer))
+            if (allocated(error)) return
+        end do
+
+        ! int64
+        input_int64 = [integer(int64) :: 0, &
+                       1, 9, 10, 99, 100, 999, 1000, 9999, 10000, 99999, 100000, 999999, 1000000, &
+                       9999999, 10000000, 99999999, 100000000, 999999999, 1000000000, 9999999999_int64, 10000000000_int64, &
+                       99999999999_int64, 100000000000_int64, 999999999999_int64, 1000000000000_int64, &
+                       9999999999999_int64, 10000000000000_int64, 99999999999999_int64, 100000000000000_int64, &
+                       999999999999999_int64, 1000000000000000_int64, 9999999999999999_int64, 10000000000000000_int64, &
+                       99999999999999999_int64, 100000000000000000_int64, 999999999999999999_int64, 1000000000000000000_int64, &
+                       Int64_Max, &
+                       -1, -9, -10, -99, -100, -999, -1000, -9999, -10000, -99999, -100000, -999999, -1000000, &
+                       -9999999, -10000000, -99999999, -100000000, -999999999, -1000000000, -9999999999_int64, -10000000000_int64, &
+                       -99999999999_int64, -100000000000_int64, -999999999999_int64, -1000000000000_int64, &
+                       -9999999999999_int64, -10000000000000_int64, -99999999999999_int64, -100000000000000_int64, &
+                       -999999999999999_int64, -1000000000000000_int64, -9999999999999999_int64, -10000000000000000_int64, &
+                       -99999999999999999_int64, -100000000000000000_int64, -999999999999999999_int64, -1000000000000000000_int64, &
+                       Int64_Min]
+        expected = [1, &
+                    1, 1, 2, 2, 3, 3, 4, 4, 5, 5, 6, 6, 7, 7, 8, 8, 9, 9, 10, 10, &
+                    11, 11, 12, 12, 13, 13, 14, 14, 15, 15, 16, 16, 17, 17, 18, 18, 19, 19, &
+                    1, 1, 2, 2, 3, 3, 4, 4, 5, 5, 6, 6, 7, 7, 8, 8, 9, 9, 10, 10, &
+                    11, 11, 12, 12, 13, 13, 14, 14, 15, 15, 16, 16, 17, 17, 18, 18, 19, 19]
+        do test_num = 1, size(input_int64)
+            write (buffer, '(A,I0,A,I0,A,I0)') &
+                "expected digits of ", input_int64(test_num), &
+                "_int64 is ", expected(test_num), &
+                " but got ", count_digits(input_int64(test_num))
+            call check(error, count_digits(input_int64(test_num)), expected(test_num), trim(buffer))
+            if (allocated(error)) return
+        end do
+
+        ! int8
+        input_int8 = [integer(int8) :: 0, &
+                      1, 9, 10, 99, 100, Int8_Max, &
+                      -1, -9, -10, -99, -100, Int8_Min]
+        expected = [1, &
+                    1, 1, 2, 2, 3, 3, &
+                    1, 1, 2, 2, 3, 3]
+        do test_num = 1, size(input_int8)
+            write (buffer, '(A,I0,A,I0,A,I0)') &
+                "expected digits of ", input_int8(test_num), &
+                "_int8 is ", expected(test_num), &
+                " but got ", count_decimal_digits(input_int8(test_num))
+            call check(error, count_decimal_digits(input_int8(test_num)), expected(test_num), trim(buffer))
+            if (allocated(error)) return
+        end do
+
+        ! int16
+        input_int16 = [integer(int16) :: 0, &
+                       1, 9, 10, 99, 100, 999, 1000, 9999, 10000, Int16_Max, &
+                       -1, -9, -10, -99, -100, -999, -1000, -9999, -10000, Int16_Min]
+        expected = [1, &
+                    1, 1, 2, 2, 3, 3, 4, 4, 5, 5, &
+                    1, 1, 2, 2, 3, 3, 4, 4, 5, 5]
+        do test_num = 1, size(input_int16)
+            write (buffer, '(A,I0,A,I0,A,I0)') &
+                "expected digits of ", input_int16(test_num), &
+                "_int16 is ", expected(test_num), &
+                " but got ", count_decimal_digits(input_int16(test_num))
+            call check(error, count_decimal_digits(input_int16(test_num)), expected(test_num), trim(buffer))
+            if (allocated(error)) return
+        end do
+
+        ! int32
+        input_int32 = [integer(int32) :: 0, &
+                       1, 9, 10, 99, 100, 999, 1000, 9999, 10000, 99999, 100000, 999999, 1000000, &
+                       9999999, 10000000, 99999999, 100000000, 999999999, 1000000000, Int32_Max, &
+                       -1, -9, -10, -99, -100, -999, -1000, -9999, -10000, -99999, -100000, -999999, -1000000, &
+                       -9999999, -10000000, -99999999, -100000000, -999999999, -1000000000, Int32_Min]
+        expected = [1, &
+                    1, 1, 2, 2, 3, 3, 4, 4, 5, 5, 6, 6, 7, 7, 8, 8, 9, 9, 10, 10, &
+                    1, 1, 2, 2, 3, 3, 4, 4, 5, 5, 6, 6, 7, 7, 8, 8, 9, 9, 10, 10]
+        do test_num = 1, size(input_int32)
+            write (buffer, '(A,I0,A,I0,A,I0)') &
+                "expected digits of ", input_int32(test_num), &
+                "_int32 is ", expected(test_num), &
+                " but got ", count_decimal_digits(input_int32(test_num))
+            call check(error, count_decimal_digits(input_int32(test_num)), expected(test_num), trim(buffer))
+            if (allocated(error)) return
+        end do
+
+        ! int64
+        input_int64 = [integer(int64) :: 0, &
+                       1, 9, 10, 99, 100, 999, 1000, 9999, 10000, 99999, 100000, 999999, 1000000, &
+                       9999999, 10000000, 99999999, 100000000, 999999999, 1000000000, 9999999999_int64, 10000000000_int64, &
+                       99999999999_int64, 100000000000_int64, 999999999999_int64, 1000000000000_int64, &
+                       9999999999999_int64, 10000000000000_int64, 99999999999999_int64, 100000000000000_int64, &
+                       999999999999999_int64, 1000000000000000_int64, 9999999999999999_int64, 10000000000000000_int64, &
+                       99999999999999999_int64, 100000000000000000_int64, 999999999999999999_int64, 1000000000000000000_int64, &
+                       Int64_Max, &
+                       -1, -9, -10, -99, -100, -999, -1000, -9999, -10000, -99999, -100000, -999999, -1000000, &
+                       -9999999, -10000000, -99999999, -100000000, -999999999, -1000000000, -9999999999_int64, -10000000000_int64, &
+                       -99999999999_int64, -100000000000_int64, -999999999999_int64, -1000000000000_int64, &
+                       -9999999999999_int64, -10000000000000_int64, -99999999999999_int64, -100000000000000_int64, &
+                       -999999999999999_int64, -1000000000000000_int64, -9999999999999999_int64, -10000000000000000_int64, &
+                       -99999999999999999_int64, -100000000000000000_int64, -999999999999999999_int64, -1000000000000000000_int64, &
+                       Int64_Min]
+        expected = [1, &
+                    1, 1, 2, 2, 3, 3, 4, 4, 5, 5, 6, 6, 7, 7, 8, 8, 9, 9, 10, 10, &
+                    11, 11, 12, 12, 13, 13, 14, 14, 15, 15, 16, 16, 17, 17, 18, 18, 19, 19, &
+                    1, 1, 2, 2, 3, 3, 4, 4, 5, 5, 6, 6, 7, 7, 8, 8, 9, 9, 10, 10, &
+                    11, 11, 12, 12, 13, 13, 14, 14, 15, 15, 16, 16, 17, 17, 18, 18, 19, 19]
+        do test_num = 1, size(input_int64)
+            write (buffer, '(A,I0,A,I0,A,I0)') &
+                "expected digits of ", input_int64(test_num), &
+                "_int64 is ", expected(test_num), &
+                " but got ", count_decimal_digits(input_int64(test_num))
+            call check(error, count_decimal_digits(input_int64(test_num)), expected(test_num), trim(buffer))
+            if (allocated(error)) return
+        end do
+    end subroutine test_count_digits
 end module test_integer
 
 program tester
