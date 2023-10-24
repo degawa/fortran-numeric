@@ -18,6 +18,7 @@ contains
                     , new_unittest("integer count_digits()", test_count_digits) &
                     , new_unittest("integer count_binary_digits()", test_count_binary_digits) &
                     , new_unittest("integer count_octal_digits()", test_count_octal_digits) &
+                    , new_unittest("integer count_hexadecimal_digits()", test_count_hexadecimal_digits) &
                     ]
     end subroutine collect_integer
 
@@ -624,6 +625,91 @@ contains
             if (allocated(error)) return
         end do
     end subroutine test_count_octal_digits
+
+    subroutine test_count_hexadecimal_digits(error)
+        type(error_type), allocatable, intent(out) :: error
+            !! error handler
+
+        integer(int8), allocatable :: input_int8(:)
+        integer(int16), allocatable :: input_int16(:)
+        integer(int32), allocatable :: input_int32(:)
+        integer(int64), allocatable :: input_int64(:)
+        integer(int32), allocatable :: expected(:)
+        integer(int32) :: test_num
+        character(256) :: buffer
+
+        ! int8
+        input_int8 = [integer(int8) :: 0, &
+                      1, 15, Int8_Max, &
+                      -1, -15, Int8_Min]
+        expected = [1, &
+                    1, 1, 2, &
+                    2, 2, 2]
+        do test_num = 1, size(input_int8)
+            write (buffer, '(A,I0,A,Z0,A,I0,A,I0)') &
+                "expected hexadecimal digits of ", input_int8(test_num), &
+                "_int8 (", input_int8(test_num), &
+                ") is ", expected(test_num), &
+                " but got ", count_hexadecimal_digits(input_int8(test_num))
+            call check(error, count_hexadecimal_digits(input_int8(test_num)), expected(test_num), trim(buffer))
+            if (allocated(error)) return
+        end do
+
+        ! int16
+        input_int16 = [integer(int16) :: 0, &
+                       1, 15, 255, 4095, int16_Max, &
+                       -1, -15, -255, -4095, int16_Min]
+        expected = [1, &
+                    1, 1, 2, 3, 4, &
+                    4, 4, 4, 4, 4]
+        do test_num = 1, size(input_int16)
+            write (buffer, '(A,I0,A,Z0,A,I0,A,I0)') &
+                "expected hexadecimal digits of ", input_int16(test_num), &
+                "_int16 (", input_int16(test_num), &
+                ") is ", expected(test_num), &
+                " but got ", count_hexadecimal_digits(input_int16(test_num))
+            call check(error, count_hexadecimal_digits(input_int16(test_num)), expected(test_num), trim(buffer))
+            if (allocated(error)) return
+        end do
+
+        ! int32
+        input_int32 = [integer(int32) :: 0, &
+                       1, 15, 255, 4095, 65535, 1048575, 16777215, 268435455, int32_Max, &
+                       -1, -15, -255, -4095, -65535, -1048575, -16777215, -268435455, int32_Min]
+        expected = [1, &
+                    1, 1, 2, 3, 4, 5, 6, 7, 8, &
+                    8, 8, 8, 8, 8, 8, 8, 8, 8]
+        do test_num = 1, size(input_int32)
+            write (buffer, '(A,I0,A,Z0,A,I0,A,I0)') &
+                "expected hexadecimal digits of ", input_int32(test_num), &
+                "_int32 (", input_int32(test_num), &
+                ") is ", expected(test_num), &
+                " but got ", count_hexadecimal_digits(input_int32(test_num))
+            call check(error, count_hexadecimal_digits(input_int32(test_num)), expected(test_num), trim(buffer))
+            if (allocated(error)) return
+        end do
+
+        ! int64
+        input_int64 = [integer(int64) :: 0, &
+                       1, 15, 255, 4095, 65535, 1048575, 16777215, 268435455, 4294967295_int64, &
+                       68719476735_int64, 1099511627775_int64, 17592186044415_int64, 281474976710655_int64, &
+                       4503599627370495_int64, 72057594037927935_int64, 1152921504606846975_int64, int64_max, &
+                       -1, -15, -255, -4095, -65535, -1048575, -16777215, -268435455, -4294967295_int64, &
+                       -68719476735_int64, -1099511627775_int64, -17592186044415_int64, -281474976710655_int64, &
+                       -4503599627370495_int64, -72057594037927935_int64, -1152921504606846975_int64, int64_Min]
+        expected = [1, &
+                    1, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, &
+                    16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16]
+        do test_num = 1, size(input_int64)
+            write (buffer, '(A,I0,A,Z0,A,I0,A,I0)') &
+                "expected hexadecimal digits of ", input_int64(test_num), &
+                "_int64 (", input_int64(test_num), &
+                ") is ", expected(test_num), &
+                " but got ", count_hexadecimal_digits(input_int64(test_num))
+            call check(error, count_hexadecimal_digits(input_int64(test_num)), expected(test_num), trim(buffer))
+            if (allocated(error)) return
+        end do
+    end subroutine test_count_hexadecimal_digits
 end module test_integer
 
 program tester
