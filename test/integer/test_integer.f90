@@ -560,7 +560,6 @@ contains
                 "_int8 (", input_int8(test_num), &
                 ") is ", expected(test_num), &
                 " but got ", count_octal_digits(input_int8(test_num))
-            print *, trim(buffer)
             call check(error, count_octal_digits(input_int8(test_num)), expected(test_num), trim(buffer))
             if (allocated(error)) return
         end do
@@ -578,7 +577,6 @@ contains
                 "_int16 (", input_int16(test_num), &
                 ") is ", expected(test_num), &
                 " but got ", count_octal_digits(input_int16(test_num))
-            print *, trim(buffer)
             call check(error, count_octal_digits(input_int16(test_num)), expected(test_num), trim(buffer))
             if (allocated(error)) return
         end do
@@ -596,7 +594,6 @@ contains
                 "_int32 (", input_int32(test_num), &
                 ") is ", expected(test_num), &
                 " but got ", count_octal_digits(input_int32(test_num))
-            print *, trim(buffer)
             call check(error, count_octal_digits(input_int32(test_num)), expected(test_num), trim(buffer))
             if (allocated(error)) return
         end do
@@ -620,7 +617,6 @@ contains
                 "_int64 (", input_int64(test_num), &
                 ") is ", expected(test_num), &
                 " but got ", count_octal_digits(input_int64(test_num))
-            print *, trim(buffer)
             call check(error, count_octal_digits(input_int64(test_num)), expected(test_num), trim(buffer))
             if (allocated(error)) return
         end do
