@@ -16,6 +16,7 @@ contains
                     , new_unittest("integer is_negative()", test_is_negative) &
                     , new_unittest("integer to_string()", test_to_string) &
                     , new_unittest("integer count_digits()", test_count_digits) &
+                    , new_unittest("integer count_binary_digits()", test_count_binary_digits) &
                     ]
     end subroutine collect_integer
 
@@ -419,6 +420,118 @@ contains
             if (allocated(error)) return
         end do
     end subroutine test_count_digits
+
+    subroutine test_count_binary_digits(error)
+        type(error_type), allocatable, intent(out) :: error
+            !! error handler
+
+        integer(int8), allocatable :: input_int8(:)
+        integer(int16), allocatable :: input_int16(:)
+        integer(int32), allocatable :: input_int32(:)
+        integer(int64), allocatable :: input_int64(:)
+        integer(int32), allocatable :: expected(:)
+        integer(int32) :: test_num
+        character(256) :: buffer
+
+        ! int8
+        input_int8 = [integer(int8) :: 0, &
+                      1, 3, 7, 15, 31, 63, Int8_Max, &
+                      -1, -3, -7, -15, -31, -63, Int8_Min]
+        expected = [1, &
+                    1, 2, 3, 4, 5, 6, 7, &
+                    8, 8, 8, 8, 8, 8, 8]
+        do test_num = 1, size(input_int8)
+            write (buffer, '(A,I0,A,B0,A,I0,A,I0)') &
+                "expected binary digits of ", input_int8(test_num), &
+                "_int8 (", input_int8(test_num), &
+                ") is ", expected(test_num), &
+                " but got ", count_binary_digits(input_int8(test_num))
+            call check(error, count_binary_digits(input_int8(test_num)), expected(test_num), trim(buffer))
+            if (allocated(error)) return
+        end do
+
+        ! int16
+        input_int16 = [integer(int16) :: 0, &
+                       1, 3, 7, 15, 31, 63, 127, 255, 511, 1023, 2047, 4095, 8191, 16383, int16_Max, &
+                       -1, -3, -7, -15, -31, -63, -127, -255, -511, -1023, -2047, -4095, -8191, -16383, int16_Min]
+        expected = [1, &
+                    1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, &
+                    16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16]
+        do test_num = 1, size(input_int16)
+            write (buffer, '(A,I0,A,B0,A,I0,A,I0)') &
+                "expected binary digits of ", input_int16(test_num), &
+                "_int16 (", input_int16(test_num), &
+                ") is ", expected(test_num), &
+                " but got ", count_binary_digits(input_int16(test_num))
+            call check(error, count_binary_digits(input_int16(test_num)), expected(test_num), trim(buffer))
+            if (allocated(error)) return
+        end do
+
+        ! int32
+        input_int32 = [integer(int32) :: 0, &
+                       1, 3, 7, 15, 31, 63, 127, 255, 511, 1023, 2047, 4095, 8191, 16383, 32767, 65535, &
+                       131071, 262143, 524287, 1048575, 2097151, 4194303, 8388607, 16777215, 33554431, 67108863, &
+                       134217727, 268435455, 536870911, 1073741823, int32_Max, &
+                       -1, -3, -7, -15, -31, -63, -127, -255, -511, -1023, -2047, -4095, -8191, -16383, -32767, -65535, &
+                       -131071, -262143, -524287, -1048575, -2097151, -4194303, -8388607, -16777215, -33554431, -67108863, &
+                       -134217727, -268435455, -536870911, -1073741823, int32_Min]
+        expected = [1, &
+                    1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, &
+                    17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, &
+                    32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, &
+                    32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32, 32]
+        do test_num = 1, size(input_int32)
+            write (buffer, '(A,I0,A,B0,A,I0,A,I0)') &
+                "expected binary digits of ", input_int32(test_num), &
+                "_int32 (", input_int32(test_num), &
+                ") is ", expected(test_num), &
+                " but got ", count_binary_digits(input_int32(test_num))
+            call check(error, count_binary_digits(input_int32(test_num)), expected(test_num), trim(buffer))
+            if (allocated(error)) return
+        end do
+
+        ! int64
+        input_int64 = [integer(int64) :: 0, &
+                       1, 3, 7, 15, 31, 63, 127, 255, 511, 1023, 2047, 4095, 8191, 16383, 32767, 65535, &
+                       131071, 262143, 524287, 1048575, 2097151, 4194303, 8388607, 16777215, 33554431, 67108863, &
+                       134217727, 268435455, 536870911, 1073741823, 2147483647, 4294967295_int64, 8589934591_int64, &
+                       17179869183_int64, 34359738367_int64, 68719476735_int64, 137438953471_int64, 274877906943_int64, &
+                       549755813887_int64, 1099511627775_int64, 2199023255551_int64, 4398046511103_int64, 8796093022207_int64, &
+                       17592186044415_int64, 35184372088831_int64, 70368744177663_int64, 140737488355327_int64, &
+                       281474976710655_int64, 562949953421311_int64, 1125899906842623_int64, 2251799813685247_int64, &
+                       4503599627370495_int64, 9007199254740991_int64, 18014398509481983_int64, 36028797018963967_int64, &
+                       72057594037927935_int64, 144115188075855871_int64, 288230376151711743_int64, 576460752303423487_int64, &
+                       1152921504606846975_int64, 2305843009213693951_int64, 4611686018427387903_int64, int64_max, &
+                       -1, -3, -7, -15, -31, -63, -127, -255, -511, -1023, -2047, -4095, -8191, -16383, -32767, -65535, &
+                       -131071, -262143, -524287, -1048575, -2097151, -4194303, -8388607, -16777215, -33554431, -67108863, &
+                       -134217727, -268435455, -536870911, -1073741823, -2147483647, -4294967295_int64, -8589934591_int64, &
+                       -17179869183_int64, -34359738367_int64, -68719476735_int64, -137438953471_int64, -274877906943_int64, &
+                       -549755813887_int64, -1099511627775_int64, -2199023255551_int64, -4398046511103_int64, &
+                       -8796093022207_int64, -17592186044415_int64, -35184372088831_int64, -70368744177663_int64, &
+                       -140737488355327_int64, -281474976710655_int64, -562949953421311_int64, -1125899906842623_int64, &
+                       -2251799813685247_int64, -4503599627370495_int64, -9007199254740991_int64, -18014398509481983_int64, &
+                       -36028797018963967_int64, -72057594037927935_int64, -144115188075855871_int64, -288230376151711743_int64, &
+                       -576460752303423487_int64, -1152921504606846975_int64, -2305843009213693951_int64, &
+                       -4611686018427387903_int64, int64_Min]
+        expected = [1, &
+                    1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, &
+                    17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, &
+                    33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, &
+                    49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60, 61, 62, 63, &
+                    64, 64, 64, 64, 64, 64, 64, 64, 64, 64, 64, 64, 64, 64, 64, 64, &
+                    64, 64, 64, 64, 64, 64, 64, 64, 64, 64, 64, 64, 64, 64, 64, 64, &
+                    64, 64, 64, 64, 64, 64, 64, 64, 64, 64, 64, 64, 64, 64, 64, 64, &
+                    64, 64, 64, 64, 64, 64, 64, 64, 64, 64, 64, 64, 64, 64, 64]
+        do test_num = 1, size(input_int64)
+            write (buffer, '(A,I0,A,B0,A,I0,A,I0)') &
+                "expected binary digits of ", input_int64(test_num), &
+                "_int64 (", input_int64(test_num), &
+                ") is ", expected(test_num), &
+                " but got ", count_binary_digits(input_int64(test_num))
+            call check(error, count_binary_digits(input_int64(test_num)), expected(test_num), trim(buffer))
+            if (allocated(error)) return
+        end do
+    end subroutine test_count_binary_digits
 end module test_integer
 
 program tester
