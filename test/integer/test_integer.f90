@@ -17,6 +17,7 @@ contains
                     , new_unittest("integer to_string()", test_to_string) &
                     , new_unittest("integer count_digits()", test_count_digits) &
                     , new_unittest("integer count_binary_digits()", test_count_binary_digits) &
+                    , new_unittest("integer count_octal_digits()", test_count_octal_digits) &
                     ]
     end subroutine collect_integer
 
@@ -532,6 +533,97 @@ contains
             if (allocated(error)) return
         end do
     end subroutine test_count_binary_digits
+
+    subroutine test_count_octal_digits(error)
+        type(error_type), allocatable, intent(out) :: error
+            !! error handler
+
+        integer(int8), allocatable :: input_int8(:)
+        integer(int16), allocatable :: input_int16(:)
+        integer(int32), allocatable :: input_int32(:)
+        integer(int64), allocatable :: input_int64(:)
+        integer(int32), allocatable :: expected(:)
+        integer(int32) :: test_num
+        character(256) :: buffer
+
+        ! int8
+        input_int8 = [integer(int8) :: 0, &
+                      1, 7, 15, Int8_Max, &
+                      -1, -7, -15, Int8_Min]
+        expected = [1, &
+                    1, 1, 2, 3, &
+                    3, 3, 3, 3]
+        do test_num = 1, size(input_int8)
+            write (buffer, '(A,I0,A,O0,A,I0,A,I0)') &
+                "expected octal digits of ", input_int8(test_num), &
+                "_int8 (", input_int8(test_num), &
+                ") is ", expected(test_num), &
+                " but got ", count_octal_digits(input_int8(test_num))
+            print *, trim(buffer)
+            call check(error, count_octal_digits(input_int8(test_num)), expected(test_num), trim(buffer))
+            if (allocated(error)) return
+        end do
+
+        ! int16
+        input_int16 = [integer(int16) :: 0, &
+                       1, 7, 15, 127, 1023, 8191, int16_Max, &
+                       -1, -7, -15, -127, -1023, -8191, int16_Min]
+        expected = [1, &
+                    1, 1, 2, 3, 4, 5, 5, &
+                    6, 6, 6, 6, 6, 6, 6]
+        do test_num = 1, size(input_int16)
+            write (buffer, '(A,I0,A,O0,A,I0,A,I0)') &
+                "expected octal digits of ", input_int16(test_num), &
+                "_int16 (", input_int16(test_num), &
+                ") is ", expected(test_num), &
+                " but got ", count_octal_digits(input_int16(test_num))
+            print *, trim(buffer)
+            call check(error, count_octal_digits(input_int16(test_num)), expected(test_num), trim(buffer))
+            if (allocated(error)) return
+        end do
+
+        ! int32
+        input_int32 = [integer(int32) :: 0, &
+                       1, 7, 15, 127, 1023, 8191, 65535, 524287, 4194303, 33554431, 268435455, int32_Max, &
+                       -1, -7, -15, -127, -1023, -8191, -65535, -524287, -4194303, -33554431, -268435455, int32_Min]
+        expected = [1, &
+                    1, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, &
+                    11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11, 11]
+        do test_num = 1, size(input_int32)
+            write (buffer, '(A,I0,A,O0,A,I0,A,I0)') &
+                "expected octal digits of ", input_int32(test_num), &
+                "_int32 (", input_int32(test_num), &
+                ") is ", expected(test_num), &
+                " but got ", count_octal_digits(input_int32(test_num))
+            print *, trim(buffer)
+            call check(error, count_octal_digits(input_int32(test_num)), expected(test_num), trim(buffer))
+            if (allocated(error)) return
+        end do
+
+        ! int64
+        input_int64 = [integer(int64) :: 0, &
+                       1, 7, 15, 127, 1023, 8191, 65535, 524287, 4194303, 33554431, 268435455, 2147483647, &
+                       17179869183_int64, 137438953471_int64, 1099511627775_int64, 8796093022207_int64, &
+                       70368744177663_int64, 562949953421311_int64, 4503599627370495_int64, 36028797018963967_int64, &
+                       288230376151711743_int64, 2305843009213693951_int64, int64_max, &
+                       -1, -7, -15, -127, -1023, -8191, -65535, -524287, -4194303, -33554431, -268435455, -2147483647, &
+                       -17179869183_int64, -137438953471_int64, -1099511627775_int64, -8796093022207_int64, &
+                       -70368744177663_int64, -562949953421311_int64, -4503599627370495_int64, -36028797018963967_int64, &
+                       -288230376151711743_int64, -2305843009213693951_int64, int64_Min]
+        expected = [1, &
+                    1, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 21, &
+                    22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22]
+        do test_num = 1, size(input_int64)
+            write (buffer, '(A,I0,A,O0,A,I0,A,I0)') &
+                "expected octal digits of ", input_int64(test_num), &
+                "_int64 (", input_int64(test_num), &
+                ") is ", expected(test_num), &
+                " but got ", count_octal_digits(input_int64(test_num))
+            print *, trim(buffer)
+            call check(error, count_octal_digits(input_int64(test_num)), expected(test_num), trim(buffer))
+            if (allocated(error)) return
+        end do
+    end subroutine test_count_octal_digits
 end module test_integer
 
 program tester
